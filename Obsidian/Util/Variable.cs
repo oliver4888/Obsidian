@@ -9,13 +9,11 @@ namespace Obsidian.Util
 
         public int Size { get; }
 
-        public int Order { get; }
 
-        public VariableAttribute(VariableType type = VariableType.Unknown, int order = 0, int size = 0)
+        public VariableAttribute(VariableType type = VariableType.Unknown, int size = 0)
         {
             this.Type = type;
             this.Size = size;
-            this.Order = order;
         }
     }
 
@@ -46,13 +44,14 @@ namespace Obsidian.Util
         Position,
 
         Unknown,
+
         Boolean,
 
         Float,
 
         Double,
-        Tranform
 
+        Tranform,
 
         UUID,
 

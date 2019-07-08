@@ -24,14 +24,18 @@ namespace Obsidian.Util
 
         public static ProtocolVersion Protocol = ProtocolVersion.v1_13_2;
 
-        public static async Task SerializeAsync(Packet packet, MinecraftStream outStream)
+        public static async Task SerializeAsync<T>(T packet, MinecraftStream outStream) where T : Packet
         {
-            var properties = GetProperties(packet);
+            var properties = from p in packet.GetType().GetProperties()
+                             let attrs = p.GetCustomAttributes(typeof(VariableAttribute), false)
+                             where attrs.Length == 1
+                             select new { Property = p, Attribute = attrs.First() as VariableAttribute };
 
             using (var stream = new MinecraftStream())
             {
                 foreach (var prop in properties)
                 {
+                    Logger.LogDebug($"Serializing {prop.Property.GetType().ToString()}");
                     var value = prop.Property.GetValue(packet);
 
                     switch (prop.Attribute.Type)
@@ -58,53 +62,44 @@ namespace Obsidian.Util
             }
         }
 
-        private static IOrderedEnumerable<dynamic> GetProperties<T>(T packet) where T : Packet
-        {
-            var properties = new List<dynamic>();
-
-            foreach (var property in packet.GetType().GetProperties())
-            {
-                var attributes = property.GetCustomAttributes(typeof(VariableAttribute), false);
-
-                if (attributes.Length != 1) {
-                    continue;
-                }
-
-                properties.Add(new { Property = property, Attribute = (VariableAttribute)attributes[0] });
-            }
-
-            return properties.OrderBy(p => p.Attribute.Order);
-        }
-
         public static async Task<T> DeserializeAsync<T>(T packet) where T : Packet
         {
-            var properties = GetProperties(packet);
+            var properties = from p in packet.GetType().GetProperties()
+                             let attrs = p.GetCustomAttributes(typeof(VariableAttribute), false)
+                             where attrs.Length == 1
+                             select new { Property = p, Attribute = attrs.First() as VariableAttribute };
 
             using (var stream = new MinecraftStream(packet.PacketData))
             {
                 foreach (var prop in properties)
                 {
+                    Logger.LogDebug($"Deserializing: {prop.Property.Name}");
+
                     var value = prop.Property.GetValue(packet);
 
                     switch (prop.Attribute.Type)
                     {
                         case VariableType.Int:
                             prop.Property.SetValue(packet, await stream.ReadIntAsync());
+                            Logger.LogDebug("Read int");
                             break;
                         case VariableType.Long:
                             prop.Property.SetValue(packet, await stream.ReadLongAsync());
                             break;
                         case VariableType.VarInt:
                             prop.Property.SetValue(packet, await stream.ReadVarIntAsync());
+                            Logger.LogDebug("Read varint");
                             break;
                         case VariableType.VarLong:
                             prop.Property.SetValue(packet, await stream.ReadVarLongAsync());
                             break;
                         case VariableType.UnsignedByte:
                             prop.Property.SetValue(packet, await stream.ReadUnsignedByteAsync());
+                            Logger.LogDebug("Read ubyte");
                             break;
                         case VariableType.Byte:
                             prop.Property.SetValue(packet, await stream.ReadByteAsync());
+                            Logger.LogDebug("Read byte");
                             break;
                         case VariableType.Short:
                             prop.Property.SetValue(packet, await stream.ReadShortAsync());
@@ -114,6 +109,7 @@ namespace Obsidian.Util
                             break;
                         case VariableType.String:
                             prop.Property.SetValue(packet, await stream.ReadStringAsync());
+                            Logger.LogDebug("Read string");
                             break;
                         case VariableType.Array:
                             prop.Property.SetValue(packet, await stream.ReadUInt8ArrayAsync(prop.Attribute.Size));

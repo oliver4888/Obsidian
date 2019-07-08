@@ -541,6 +541,7 @@ namespace Obsidian
 
                 using (var stream = new MinecraftStream())
                 {
+                    this.Logger.LogDebug("Trying to serialize packet");
                     await PacketHandler.SerializeAsync(packet, stream);
 
                     await packet.WriteToStreamAsync(stream, this.MinecraftStream);
