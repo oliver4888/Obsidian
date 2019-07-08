@@ -10,7 +10,7 @@ namespace Obsidian.Util
         public int Size { get; }
 
 
-        public VariableAttribute(VariableType type = VariableType.Unknown, int size = 0)
+        public VariableAttribute(VariableType type = VariableType.Auto, int order = 0, int size = 0)
         {
             this.Type = type;
             this.Size = size;
@@ -19,6 +19,11 @@ namespace Obsidian.Util
 
     public enum VariableType
     {
+        /// <summary>
+        /// Automatically figures out what data type to use for this variable.
+        /// </summary>
+        Auto,
+
         Int,
 
         Long,
@@ -43,15 +48,13 @@ namespace Obsidian.Util
 
         Position,
 
-        Unknown,
-
         Boolean,
 
         Float,
 
         Double,
 
-        Tranform,
+        Transform,
 
         UUID,
 

@@ -6,9 +6,11 @@ using Obsidian.Net.Packets.Play;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using static Obsidian.Util.PacketSerializer;
 
 namespace Obsidian.Util
 {
