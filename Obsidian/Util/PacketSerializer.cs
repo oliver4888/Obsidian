@@ -1,4 +1,5 @@
 ﻿using Obsidian.Chat;
+using Obsidian.Logging;
 using Obsidian.Net;
 using Obsidian.Net.Packets;
 using System;
@@ -49,7 +50,8 @@ namespace Obsidian.Util
                         else if (type == typeof(string)) return VariableType.String;
                         else if (type == typeof(Transform)) return VariableType.Transform;
                         else if (type == typeof(ushort)) return VariableType.UnsignedShort;
-                        else throw new NotImplementedException($"Can't handle this type ({type.ToString()}) yet");
+                        else if (type.IsEnum) return VariableType.VarInt;
+                        else Console.WriteLine($"Failed to get type: {type.Name}");
                     }
 
                     return variableType;
@@ -107,9 +109,9 @@ namespace Obsidian.Util
             }
         }
 
-        private static async Task<object> ReadAsync(MinecraftStream stream, VariableAttribute attribute, VariableType type)
+        private static async Task<object> ReadAsync(MinecraftStream stream, VariableAttribute attribute)
         {
-            switch (type)
+            switch (attribute.Type)
             {
                 case VariableType.Int: return await stream.ReadIntAsync();
                 case VariableType.Long: return await stream.ReadLongAsync();
@@ -128,13 +130,13 @@ namespace Obsidian.Util
                 case VariableType.Transform: return await stream.ReadTransformAsync();
 
                 default:
-                case VariableType.List: throw new NotImplementedException(); //TODO: Add list VariableType
+                case VariableType.List: logger.LogWarning("No list type support..."); return null;//TODO: Add list VariableType
             }
         }
 
-        private static async Task WriteAsync(MinecraftStream stream, VariableAttribute attribute, VariableType type, object value)
+        private static async Task WriteAsync(MinecraftStream stream, VariableAttribute attribute, object value)
         {
-            switch (type)
+            switch (attribute.Type)
             {
                 case VariableType.Int: await stream.WriteIntAsync((int)value); break;
                 case VariableType.Long: await stream.WriteLongAsync((long)value); break;
@@ -154,11 +156,11 @@ namespace Obsidian.Util
                 default:
                 case VariableType.Transform: //TODO: add writing transforms
                 case VariableType.Array: //TODO: add writing int arrays
-                case VariableType.List: throw new NotImplementedException($"Can't handle {type.ToString()}"); //TODO: Add list VariableType
+                case VariableType.List: logger.LogWarning($"Failed to read type:{attribute.Type}..."); break; //TODO: Add list VariableType
             }
         }
 
-        private static IOrderedEnumerable<Variable> GetVariables<T>(T packet) where T : Packet
+        private static List<Variable> GetVariables<T>(T packet) where T : Packet
         {
             var variables = new List<Variable>();
 
@@ -186,12 +188,12 @@ namespace Obsidian.Util
                 variables.Add(new Variable(field, (VariableAttribute)attributes[0]));
             }
 
-            return variables.OrderBy(p => p.Attribute.Order);
+            return variables;
         }
 
         public static async Task SerializeAsync(Packet packet, MinecraftStream outStream)
         {
-            IOrderedEnumerable<Variable> variables = GetVariables(packet);
+            List<Variable> variables = GetVariables(packet);
 
             using (var stream = new MinecraftStream())
             {
@@ -199,22 +201,24 @@ namespace Obsidian.Util
                 {
                     object value = variable.GetValue(packet);
 
-                    await WriteAsync(stream, variable.Attribute, variable.Type, value);
+                    await WriteAsync(stream, variable.Attribute, value);
                 }
 
                 await stream.CopyToAsync(outStream);
             }
         }
 
+        private static Logger logger = new Logger("Serialzer", LogLevel.Debug);
+
         public static async Task<T> DeserializeAsync<T>(T packet) where T : Packet
         {
-            IOrderedEnumerable<Variable> variables = GetVariables(packet);
+            List<Variable> variables = GetVariables(packet);
 
             using (var stream = new MinecraftStream(packet.PacketData))
             {
                 foreach (Variable variable in variables)
                 {
-                    dynamic value = await ReadAsync(stream, variable.Attribute, variable.Type);
+                    var value = await ReadAsync(stream, variable.Attribute);
 
                     variable.SetValue(packet, value);
                 }

@@ -58,6 +58,7 @@ namespace Obsidian.Util
 
         UUID,
 
-        Chat
+        Chat,
+        Tranform
     }
 }

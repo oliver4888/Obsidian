@@ -4,16 +4,16 @@ namespace Obsidian.Net.Packets
 {
     public class Handshake : Packet
     {
-        [Variable]
+        [Variable(VariableType.VarInt)]
         public ProtocolVersion Version { get; set; }
 
-        [Variable]
+        [Variable(VariableType.String)]
         public string ServerAddress { get; set; }
 
-        [Variable]
+        [Variable(VariableType.UnsignedShort)]
         public ushort ServerPort { get; set; }
 
-        [Variable]
+        [Variable(VariableType.VarInt)]
         public ClientState NextState { get; set; }
 
         public Handshake(byte[] data) : base(0x00, data)

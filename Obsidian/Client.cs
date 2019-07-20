@@ -280,6 +280,8 @@ namespace Obsidian
 
                             var nextState = handshake.NextState;
 
+                            this.Logger.LogWarning(nextState.ToString());
+
                             if (nextState != ClientState.Status && nextState != ClientState.Login)
                             {
                                 this.Logger.LogDebug($"Client sent unexpected state ({nextState}), forcing it to disconnect");
@@ -541,7 +543,7 @@ namespace Obsidian
                 using (var stream = new MinecraftStream())
                 {
                     this.Logger.LogDebug("Trying to serialize packet");
-                    await PacketHandler.SerializeAsync(packet, stream);
+                    await PacketSerializer.SerializeAsync(packet, stream);
 
                     await packet.WriteToStreamAsync(stream, this.MinecraftStream);
                 }
