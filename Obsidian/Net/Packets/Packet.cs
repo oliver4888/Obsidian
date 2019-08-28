@@ -1,5 +1,4 @@
 using Obsidian.Util;
-using System;
 using System.Threading.Tasks;
 
 namespace Obsidian.Net.Packets
@@ -28,7 +27,7 @@ namespace Obsidian.Net.Packets
             /* Only for the static method to _not_ error */
         }
 
-        public async Task WriteToStreamAsync(MinecraftStream inStream, MinecraftStream outStream)
+        public async Task WriteToStreamAsync(byte[] data, MinecraftStream outStream)
         {
             int packetLength = this.PacketData.Length + this.PacketId.GetVarintLength();
 
@@ -37,11 +36,9 @@ namespace Obsidian.Net.Packets
             Program.PacketLogger.LogDebug("====================================");
 #endif
 
-            //byte[] data = this.PacketData;
-
             await outStream.WriteVarIntAsync(packetLength);
             await outStream.WriteVarIntAsync(PacketId);
-            await inStream.CopyToAsync(outStream);
+            await outStream.WriteAsync(data);
         }
 
         public virtual Task DeserializeAsync() => Task.CompletedTask;

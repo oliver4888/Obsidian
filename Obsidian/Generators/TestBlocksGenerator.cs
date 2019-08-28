@@ -1,7 +1,7 @@
 ﻿using Obsidian.BlockData;
 using Obsidian.Util.Registry;
 
-namespace Obsidian.World.Generators
+namespace Obsidian.Generators
 {
     public class TestBlocksGenerator : WorldGenerator
     {

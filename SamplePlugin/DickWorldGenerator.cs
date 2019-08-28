@@ -1,6 +1,5 @@
-﻿using Obsidian.BlockData;
-using Obsidian.World;
-
+﻿using Obsidian;
+using Obsidian.BlockData;
 namespace SamplePlugin
 {
     public class DickWorldGenerator : WorldGenerator

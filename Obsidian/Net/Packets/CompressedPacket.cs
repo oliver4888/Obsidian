@@ -18,7 +18,7 @@ namespace Obsidian.Net.Packets
         private CompressedPacket() { /* Only for the static method to _not_ error*/ }
 
         //Are we ever gonna use this?
-        public new async Task WriteToStreamAsync(MinecraftStream stream)
+        public async Task WriteToStreamAsync(MinecraftStream stream)
         {
             var packetLength = this.PacketId.GetVarintLength() + this.PacketData.Length;
             // compress data

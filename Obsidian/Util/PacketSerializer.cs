@@ -5,9 +5,7 @@ using Obsidian.Net.Packets;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Obsidian.Util
@@ -109,9 +107,9 @@ namespace Obsidian.Util
             }
         }
 
-        private static async Task<object> ReadAsync(MinecraftStream stream, VariableAttribute attribute)
+        private static async Task<object> ReadAsync(MinecraftStream stream, Variable var)
         {
-            switch (attribute.Type)
+            switch (var.Type)
             {
                 case VariableType.Int: return await stream.ReadIntAsync();
                 case VariableType.Long: return await stream.ReadLongAsync();
@@ -122,7 +120,7 @@ namespace Obsidian.Util
                 case VariableType.Short: return await stream.ReadShortAsync();
                 case VariableType.UnsignedShort: return await stream.ReadUnsignedShortAsync();
                 case VariableType.String: return await stream.ReadStringAsync();
-                case VariableType.Array: return await stream.ReadUInt8ArrayAsync(attribute.Size);
+                case VariableType.Array: return await stream.ReadUInt8ArrayAsync(var.Attribute.Size);
                 case VariableType.Position: return await stream.ReadPositionAsync();
                 case VariableType.Boolean: return await stream.ReadBooleanAsync();
                 case VariableType.Float: return await stream.ReadFloatAsync();
@@ -130,13 +128,13 @@ namespace Obsidian.Util
                 case VariableType.Transform: return await stream.ReadTransformAsync();
 
                 default:
-                case VariableType.List: logger.LogWarning("No list type support..."); return null;//TODO: Add list VariableType
+                case VariableType.List: logger.LogWarning("type not supported..."); return null;//TODO: Add list VariableType
             }
         }
 
-        private static async Task WriteAsync(MinecraftStream stream, VariableAttribute attribute, object value)
+        private static async Task WriteAsync(MinecraftStream stream, Variable var, object value)
         {
-            switch (attribute.Type)
+            switch (var.Type)
             {
                 case VariableType.Int: await stream.WriteIntAsync((int)value); break;
                 case VariableType.Long: await stream.WriteLongAsync((long)value); break;
@@ -156,7 +154,7 @@ namespace Obsidian.Util
                 default:
                 case VariableType.Transform: //TODO: add writing transforms
                 case VariableType.Array: //TODO: add writing int arrays
-                case VariableType.List: logger.LogWarning($"Failed to read type:{attribute.Type}..."); break; //TODO: Add list VariableType
+                case VariableType.List: logger.LogWarning($"Failed to read type:{var.Type}..."); break; //TODO: Add list VariableType
             }
         }
 
@@ -201,10 +199,10 @@ namespace Obsidian.Util
                 {
                     object value = variable.GetValue(packet);
 
-                    await WriteAsync(stream, variable.Attribute, value);
+                    await WriteAsync(stream, variable, value);
                 }
 
-                await stream.CopyToAsync(outStream);
+                await outStream.WriteAsync(stream.ToArray());
             }
         }
 
@@ -218,7 +216,7 @@ namespace Obsidian.Util
             {
                 foreach (Variable variable in variables)
                 {
-                    var value = await ReadAsync(stream, variable.Attribute);
+                    var value = await ReadAsync(stream, variable);
 
                     variable.SetValue(packet, value);
                 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Obsidian.World
+namespace Obsidian
 {
     public abstract class WorldGenerator
     {

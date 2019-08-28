@@ -10,7 +10,6 @@ using Obsidian.Net.Packets.Play;
 using Obsidian.PlayerData;
 using Obsidian.PlayerData.Info;
 using Obsidian.Util;
-using Obsidian.World;
 
 using System;
 using System.Collections.Concurrent;
@@ -248,7 +247,6 @@ namespace Obsidian
             while (!Cancellation.IsCancellationRequested && this.Tcp.Connected)
             {
                 Packet packet = this.Compressed ? await this.GetNextCompressedPacketAsync() : await this.GetNextPacketAsync();
-                Packet returnPacket;
 
                 if (this.State == ClientState.Play && packet.PacketData.Length < 1)
                     this.Disconnect();
@@ -534,8 +532,7 @@ namespace Obsidian
                 {
                     byte[] data = await packet.SerializeAsync();
 
-                    using (var stream = new MinecraftStream(data))
-                        await packet.WriteToStreamAsync(stream, this.MinecraftStream);
+                    await packet.WriteToStreamAsync(data, this.MinecraftStream);
 
                     goto skip;
                 }
@@ -545,10 +542,10 @@ namespace Obsidian
                     this.Logger.LogDebug("Trying to serialize packet");
                     await PacketSerializer.SerializeAsync(packet, stream);
 
-                    await packet.WriteToStreamAsync(stream, this.MinecraftStream);
+                    await packet.WriteToStreamAsync(stream.ToArray(), this.MinecraftStream);
                 }
 
-                skip:
+            skip:
                 return;
             }
         }

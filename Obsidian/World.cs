@@ -1,15 +1,13 @@
 ﻿using fNbt;
 using Obsidian.Concurrency;
+using Obsidian.Entities;
 using Obsidian.PlayerData;
-using Obsidian.Util;
-using Obsidian.World;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Obsidian.Entities
+namespace Obsidian
 {
     public class World
     {
@@ -21,7 +19,7 @@ namespace Obsidian.Entities
         // but might be easier for internal management purposes
         public List<object> Entities { get; }
 
-        internal string folder { get; }
+        internal string Folder { get; }
         internal bool Loaded { get; set; }
 
         private readonly ConcurrentHashSet<Chunk> LoadedChunks;
@@ -39,7 +37,7 @@ namespace Obsidian.Entities
             this.Players = new List<Player>();
 
             this.Entities = new List<object>();
-            this.folder = folder;
+            this.Folder = folder;
 
             this.LoadedChunks = new ConcurrentHashSet<Chunk>();
             this.worldgen = worldgen;
@@ -143,7 +141,7 @@ namespace Obsidian.Entities
 
         public void Load()
         {
-            var DataPath = Path.Combine(folder, "level.dat");
+            var DataPath = Path.Combine(Folder, "level.dat");
 
             var DataFile = new NbtFile();
             DataFile.LoadFromFile(DataPath);
@@ -185,7 +183,7 @@ namespace Obsidian.Entities
 
         public void LoadPlayer(Guid uuid)
         {
-            var playerfile = Path.Combine(folder, "players", $"{uuid.ToString()}.dat");
+            var playerfile = Path.Combine(Folder, "players", $"{uuid.ToString()}.dat");
 
             var PFile = new NbtFile();
             PFile.LoadFromFile(playerfile);

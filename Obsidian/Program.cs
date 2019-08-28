@@ -41,12 +41,15 @@ namespace Obsidian
             Servers = new Server[Config.ServerCount];
             for (int i = 0; i < Servers.Length; i++)
             {
-                if (!Directory.Exists(i.ToString()))
-                {
-                    Directory.CreateDirectory(i.ToString());
-                }
+                if (!Directory.Exists("instances"))
+                    Directory.CreateDirectory("instances");
 
-                string configPath = Path.Combine(i.ToString(), "config.json");
+                var instancePath = $"instances/{i.ToString()}";
+
+                if (!Directory.Exists(instancePath))
+                    Directory.CreateDirectory(instancePath);
+
+                string configPath = Path.Combine(instancePath, "config.json");
 
                 if (!File.Exists(configPath))
                 {

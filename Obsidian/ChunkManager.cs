@@ -1,4 +1,4 @@
-﻿namespace Obsidian.World
+﻿namespace Obsidian
 {
     class ChunkManager
     {

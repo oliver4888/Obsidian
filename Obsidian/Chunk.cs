@@ -2,7 +2,7 @@
 using Obsidian.Util;
 using Obsidian.Util.Registry;
 
-namespace Obsidian.World
+namespace Obsidian
 {
     public class Chunk
     {

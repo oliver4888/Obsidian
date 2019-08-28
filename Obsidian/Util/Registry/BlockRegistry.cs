@@ -610,19 +610,20 @@ namespace Obsidian.Util.Registry
             }
         }
 
-        public static async Task<Block> RegisterAsync(Block block)
+       
+        public static Task<Block> RegisterAsync(Block block)
         {
             //BLOCK_STATES.Add(block);
             //Logger.LogDebugAsync($"Registered: {block.UnlocalizedName} with id {block.Id}");
-            return block;
+            return Task.FromResult(block);
         }
 
-        public static async Task<Block> RegisterAsync(string name, int id)
+        public static Task<Block> RegisterAsync(string name, int id)
         {
             var block = new Block(name, id);
             //BLOCK_STATES.Add(block);
             //Logger.LogDebugAsync($"Registered: {name} with id {id}");
-            return block;
+            return Task.FromResult(block);
         }
 
         public static Block G(Materials mat)

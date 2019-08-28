@@ -1,7 +1,7 @@
 ﻿using fNbt.Serialization;
 using Obsidian.Util;
 
-namespace Obsidian.World
+namespace Obsidian
 {
     public abstract class TileEntity
     {

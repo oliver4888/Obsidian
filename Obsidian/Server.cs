@@ -4,14 +4,13 @@ using Obsidian.Commands;
 using Obsidian.Concurrency;
 using Obsidian.Entities;
 using Obsidian.Events;
+using Obsidian.Generators;
 using Obsidian.Logging;
 using Obsidian.Net.Packets;
 using Obsidian.Net.Packets.Play;
 using Obsidian.Plugins;
 using Obsidian.Util;
 using Obsidian.Util.Registry;
-using Obsidian.World;
-using Obsidian.World.Generators;
 using Qmmands;
 using System;
 using System.Collections.Concurrent;
@@ -85,7 +84,7 @@ namespace Obsidian
             this.PluginManager = new PluginManager(this);
             this.Operators = new OperatorList(this);
 
-            this.world = new Entities.World("", WorldGenerator);
+            this.world = new World("", WorldGenerator);
         }
 
         public ConcurrentHashSet<Client> Clients { get; }
@@ -99,7 +98,7 @@ namespace Obsidian
         public string Version { get; }
         public int Port { get; }
         public int TotalTicks { get; private set; } = 0;
-        public Entities.World world;
+        public World world;
 
         private async Task ServerLoop()
         {
