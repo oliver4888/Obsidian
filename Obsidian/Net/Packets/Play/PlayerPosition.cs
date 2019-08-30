@@ -4,7 +4,7 @@ namespace Obsidian.Net.Packets
 {
     public class PlayerPosition : Packet
     {
-        public PlayerPosition(Position pos, bool onground) : base(0x10, new byte[0])
+        public PlayerPosition(Position pos, bool onground) : base(0x10, System.Array.Empty<byte>())
         {
             this.X = pos.X;
             this.Y = pos.Y;
@@ -16,16 +16,16 @@ namespace Obsidian.Net.Packets
         {
         }
 
-        [Variable]
+        [Variable(0)]
         public double X { get; set; }
 
-        [Variable]
+        [Variable(1)]
         public double Y { get; set; }
 
-        [Variable]
+        [Variable(2)]
         public double Z { get; set; }
 
-        [Variable]
+        [Variable(3)]
         public bool OnGround { get; private set; } = false;
 
         public Position Position => new Position

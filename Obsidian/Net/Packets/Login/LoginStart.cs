@@ -10,7 +10,7 @@ namespace Obsidian.Net.Packets
         {
         }
 
-        [Variable]
+        [Variable(0)]
         public string Username { get; private set; }
     }
 }

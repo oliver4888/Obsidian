@@ -4,9 +4,9 @@ namespace Obsidian.Net.Packets.Play
 {
     public class EntityPacket : Packet
     {
-        [Variable]
+        [Variable(0)]
         public int Id { get; set; }
 
-        public EntityPacket() : base(0x27, new byte[0]) { }
+        public EntityPacket() : base(0x27, System.Array.Empty<byte>()) { }
     }
 }

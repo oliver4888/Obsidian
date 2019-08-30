@@ -5,13 +5,15 @@ namespace Obsidian.Util
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class VariableAttribute : Attribute
     {
+        public int Order { get; }
+
         public VariableType Type { get; }
 
         public int Size { get; }
 
-
-        public VariableAttribute(VariableType type = VariableType.Auto, int order = 0, int size = 0)
+        public VariableAttribute(int order, VariableType type = VariableType.Auto, int size = 0)
         {
+            this.Order = order;
             this.Type = type;
             this.Size = size;
         }
@@ -44,6 +46,10 @@ namespace Obsidian.Util
 
         Array,
 
+        ByteArray,
+
+        LongArray,
+
         List,
 
         Position,
@@ -59,6 +65,7 @@ namespace Obsidian.Util
         UUID,
 
         Chat,
+
         Tranform
     }
 }

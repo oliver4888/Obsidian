@@ -8,7 +8,7 @@ namespace Obsidian.Net.Packets
 
         public ServerDifficulty(byte difficulty) => this.difficulty = difficulty;
 
-        [Variable]
+        [Variable(0)]
         private byte difficulty;
 
         public Difficulty Difficulty

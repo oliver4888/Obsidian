@@ -4,13 +4,13 @@ namespace Obsidian.Net.Packets
 {
     public class PlayerDigging : Packet
     {
-        [Variable]
+        [Variable(0)]
         public int Status { get; private set; }
 
-        [Variable]
+        [Variable(1)]
         public Position Location { get; private set; }
 
-        [Variable]
+        [Variable(2)]
         public sbyte Face { get; private set; } // This is an enum of what face of the block is being hit
 
         public PlayerDigging(byte[] packetdata) : base(0x18, packetdata) { }

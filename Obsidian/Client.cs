@@ -304,7 +304,7 @@ namespace Obsidian
                                 break;
 
                             case 0x00:
-                                var loginStart = new LoginStart(packet.PacketData);
+                                var loginStart = await PacketSerializer.DeserializeAsync(new LoginStart(packet.PacketData));
 
                                 string username = loginStart.Username;
 
@@ -534,19 +534,11 @@ namespace Obsidian
 
                     await packet.WriteToStreamAsync(data, this.MinecraftStream);
 
-                    goto skip;
+                    return;
                 }
 
-                using (var stream = new MinecraftStream())
-                {
-                    this.Logger.LogDebug("Trying to serialize packet");
-                    await PacketSerializer.SerializeAsync(packet, stream);
-
-                    await packet.WriteToStreamAsync(stream.ToArray(), this.MinecraftStream);
-                }
-
-            skip:
-                return;
+                this.Logger.LogDebug("Trying to serialize packet");
+                await PacketSerializer.SerializeAsync(packet, this.MinecraftStream);
             }
         }
 

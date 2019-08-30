@@ -12,13 +12,13 @@ namespace Obsidian.Net.Packets
             new MinecraftBrand()
         };
 
-        [Variable]
+        [Variable(0)]
         public string Channel { get; private set; }
 
-        [Variable]
+        [Variable(1)]
         public byte[] Data { get; private set; }
 
-        public PluginMessage(string channel, byte[] data) : base(0x19, new byte[0])
+        public PluginMessage(string channel, byte[] data) : base(0x19, System.Array.Empty<byte>())
         {
             //TODO: ADD check pls
             this.Channel = channel;

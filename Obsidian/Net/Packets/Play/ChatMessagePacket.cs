@@ -11,10 +11,10 @@ namespace Obsidian.Net.Packets
             this.Position = position;
         }
 
-        [Variable]
+        [Variable(0)]
         public ChatMessage Message { get; private set; }
 
-        [Variable]
+        [Variable(1)]
         public byte Position { get; private set; } = 0; // 0 = chatbox, 1 = system message, 2 = game info (actionbar)
     }
 }

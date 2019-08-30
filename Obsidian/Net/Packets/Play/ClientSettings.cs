@@ -9,22 +9,22 @@ namespace Obsidian.Net.Packets
         {
         }
 
-        [Variable]
+        [Variable(0)]
         public string Locale { get; private set; }
 
-        [Variable]
+        [Variable(1)]
         public sbyte ViewDistance { get; private set; }
 
-        [Variable(VariableType.Int)]
+        [Variable(2, VariableType.Int)]
         public int ChatMode { get; private set; }
 
-        [Variable]
+        [Variable(3)]
         public bool ChatColors { get; private set; }
 
-        [Variable]
+        [Variable(4)]
         public byte SkinParts { get; private set; } // skin parts that are displayed. might not be necessary to decode?
 
-        [Variable]
+        [Variable(5)]
         public int MainHand { get; private set; }
     }
 }

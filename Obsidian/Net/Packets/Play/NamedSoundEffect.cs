@@ -21,19 +21,19 @@ namespace Obsidian.Net.Packets
             this.Pitch = pitch;
         }
 
-        [Variable]
+        [Variable(0)]
         public string Name { get; }
 
-        [Variable]
+        [Variable(1)]
         public SoundCategory Category { get; }
 
-        [Variable]
+        [Variable(2)]
         public Position Location { get; }
 
-        [Variable]
+        [Variable(3)]
         public float Volume { get; }
 
-        [Variable]
+        [Variable(4)]
         public float Pitch { get; }
 
         public override async Task<byte[]> SerializeAsync()

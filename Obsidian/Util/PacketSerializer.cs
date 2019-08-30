@@ -5,6 +5,7 @@ using Obsidian.Net.Packets;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -36,6 +37,7 @@ namespace Obsidian.Util
 
                         if (type == typeof(bool)) return VariableType.Boolean;
                         else if (type == typeof(byte)) return VariableType.UnsignedByte;
+                        else if (type == typeof(byte[])) return VariableType.ByteArray;
                         else if (type == typeof(ChatMessage)) return VariableType.Chat;
                         else if (type == typeof(double)) return VariableType.Double;
                         else if (type == typeof(float)) return VariableType.Float;
@@ -62,8 +64,7 @@ namespace Obsidian.Util
                 {
                     return propertyInfo.PropertyType;
                 }
-
-                if (Info is FieldInfo fieldInfo)
+                else if (Info is FieldInfo fieldInfo)
                 {
                     return fieldInfo.FieldType;
                 }
@@ -78,8 +79,7 @@ namespace Obsidian.Util
                 {
                     return propertyInfo.GetValue(obj);
                 }
-
-                if (Info is FieldInfo fieldInfo)
+                else if (Info is FieldInfo fieldInfo)
                 {
                     return fieldInfo.GetValue(obj);
                 }
@@ -95,8 +95,7 @@ namespace Obsidian.Util
                     propertyInfo.SetValue(obj, value);
                     return;
                 }
-
-                if (Info is FieldInfo fieldInfo)
+                else if (Info is FieldInfo fieldInfo)
                 {
                     fieldInfo.SetValue(obj, value);
                     return;
@@ -150,6 +149,7 @@ namespace Obsidian.Util
                 case VariableType.Float: await stream.WriteFloatAsync((float)value); break;
                 case VariableType.Double: await stream.WriteDoubleAsync((double)value); break;
                 case VariableType.Chat: await stream.WriteChatAsync((ChatMessage)value); break;
+                case VariableType.ByteArray: await stream.WriteAsync((byte[])value); break;
 
                 default:
                 case VariableType.Transform: //TODO: add writing transforms
@@ -195,14 +195,36 @@ namespace Obsidian.Util
 
             using (var stream = new MinecraftStream())
             {
-                foreach (Variable variable in variables)
+                foreach (Variable variable in variables.OrderBy(x => x.Attribute.Order))
                 {
+
                     object value = variable.GetValue(packet);
 
-                    await WriteAsync(stream, variable, value);
+                    Console.WriteLine(variable.Type);
+
+                    try
+                    {
+                        if (packet is EncryptionRequest && variable.Type == VariableType.String)
+                        {
+                            await stream.WriteStringAsync(string.Empty);
+                            continue;
+                        }
+
+                        await WriteAsync(stream, variable, value);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message + ": " + e.StackTrace);
+                    }
                 }
 
-                await outStream.WriteAsync(stream.ToArray());
+                var data = stream.ToArray();
+
+                int packetLength = data.Length + packet.PacketId.GetVarintLength();
+
+                await outStream.WriteVarIntAsync(packetLength);
+                await outStream.WriteVarIntAsync(packet.PacketId);
+                await outStream.WriteAsync(data);
             }
         }
 

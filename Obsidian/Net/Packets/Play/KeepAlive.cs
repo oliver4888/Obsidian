@@ -4,7 +4,7 @@ namespace Obsidian.Net.Packets
 {
     public class KeepAlive : Packet
     {
-        public KeepAlive(long id) : base(0x21, new byte[0])
+        public KeepAlive(long id) : base(0x21, System.Array.Empty<byte>())
         {
             this.KeepAliveId = id;
         }
@@ -13,7 +13,7 @@ namespace Obsidian.Net.Packets
         {
         }
 
-        [Variable]
+        [Variable(0)]
         public long KeepAliveId { get; set; }
     }
 }

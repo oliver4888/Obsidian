@@ -5,25 +5,25 @@ namespace Obsidian.Net.Packets
 {
     public class PlayerBlockPlacement : Packet
     {
-        [Variable]
+        [Variable(0)]
         public Position Location { get; private set; }
 
-        [Variable]
+        [Variable(1)]
         public BlockFace Face { get; private set; } // enum with face
 
-        [Variable]
+        [Variable(2)]
         public int Hand { get; private set; } // hand it was placed from. 0 is main, 1 is off
 
-        [Variable]
+        [Variable(3)]
         public float CursorX { get; private set; }
 
-        [Variable]
+        [Variable(4)]
         public float CursorY { get; private set; }
 
-        [Variable]
+        [Variable(5)]
         public float CursorZ { get; private set; }
 
-        public PlayerBlockPlacement(Position loc, BlockFace face, int hand, float cursorx, float cursory, float cursorz) : base(0x29, new byte[0])
+        public PlayerBlockPlacement(Position loc, BlockFace face, int hand, float cursorx, float cursory, float cursorz) : base(0x29, System.Array.Empty<byte>())
         {
             Location = loc;
             Face = face;

@@ -4,7 +4,7 @@ namespace Obsidian.Net.Packets.Play
 {
     public class AnimationServerPacket : Packet
     {
-        [Variable]
+        [Variable(0)]
         public Hand Hand { get; set; }
 
         public AnimationServerPacket(byte[] data) : base(0x27, data) { }

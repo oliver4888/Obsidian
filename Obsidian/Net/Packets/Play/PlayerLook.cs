@@ -15,13 +15,13 @@ namespace Obsidian.Net.Packets
         {
         }
 
-        [Variable]
+        [Variable(0)]
         public float Yaw { get; private set; } = 0;
 
-        [Variable]
+        [Variable(1)]
         public float Pitch { get; private set; } = 0;
 
-        [Variable]
+        [Variable(2)]
         public bool OnGround { get; private set; } = false;
     }
 }

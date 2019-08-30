@@ -17,25 +17,25 @@ namespace Obsidian.Net.Packets.Play
             this.Entity = entity ?? throw new ArgumentNullException(nameof(entity));
         }
 
-        [Variable]
+        [Variable(0)]
         public int Id { get; }
 
-        [Variable]
+        [Variable(1)]
         public Guid Uuid { get; }
 
-        [Variable]
+        [Variable(2)]
         public int Type { get; }
 
-        [Variable]
+        [Variable(3)]
         public Transform Transform { get; }
 
-        [Variable]
+        [Variable(4)]
         public float HeadPitch { get; }
 
-        [Variable]
+        [Variable(5)]
         public Velocity Velocity { get; }
 
-        [Variable]
+        [Variable(6)]
         public Entity Entity { get; }
     }
 }

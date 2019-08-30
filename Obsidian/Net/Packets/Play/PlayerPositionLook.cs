@@ -16,7 +16,7 @@ namespace Obsidian.Net.Packets
 
     public class PlayerPositionLook : Packet
     {
-        public PlayerPositionLook(Transform tranform, PositionFlags flags, int tpId) : base(0x32, new byte[0])
+        public PlayerPositionLook(Transform tranform, PositionFlags flags, int tpId) : base(0x32, Array.Empty<byte>())
         {
             this.Transform = tranform;
 
@@ -28,13 +28,13 @@ namespace Obsidian.Net.Packets
         {
         }
 
-        [Variable]
+        [Variable(0)]
         public Transform Transform { get; set; }
 
-        [Variable]
+        [Variable(1)]
         public PositionFlags Flags { get; private set; } = PositionFlags.X | PositionFlags.Y | PositionFlags.Z;
 
-        [Variable]
+        [Variable(2)]
         public int TeleportId { get; private set; } = 0;
     }
 }

@@ -5,16 +5,16 @@ namespace Obsidian.Net.Packets
 {
     public class EncryptionResponse : Packet
     {
-        [Variable]
+        [Variable(0)]
         public int SecretLength { get; set; }
 
-        [Variable(VariableType.Array)]
+        [Variable(1, VariableType.Array)]
         public byte[] SharedSecret { get; private set; }
 
-        [Variable]
+        [Variable(2)]
         public int TokenLength { get; set; }
 
-        [Variable(VariableType.Array)]
+        [Variable(3, VariableType.Array)]
         public byte[] VerifyToken { get; set; }
 
         public EncryptionResponse(byte[] data) : base(0x01, data)

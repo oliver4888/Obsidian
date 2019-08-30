@@ -7,7 +7,7 @@ namespace Obsidian.Net.Packets
     {
         public ChangeGameState(ChangeGameStateReason Reason) : base(0x20, new byte[0]) => this.Reason = Reason;
 
-        [Variable]
+        [Variable(0)]
         public ChangeGameStateReason Reason { get; private set; }
     }
 }

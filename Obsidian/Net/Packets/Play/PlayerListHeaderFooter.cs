@@ -18,10 +18,10 @@ namespace Obsidian.Net.Packets.Play
             };
         }
 
-        [Variable]
+        [Variable(0)]
         public ChatMessage Header { get; }
 
-        [Variable]
+        [Variable(1)]
         public ChatMessage Footer { get; }
     }
 }

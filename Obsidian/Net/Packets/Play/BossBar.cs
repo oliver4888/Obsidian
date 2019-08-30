@@ -12,10 +12,10 @@ namespace Obsidian.Net.Packets
             this.Action = action ?? throw new ArgumentNullException(nameof(action));
         }
 
-        [Variable]
+        [Variable(0)]
         public Guid UUID { get; private set; }
 
-        [Variable]
+        [Variable(1)]
         public BossBarAction Action { get; private set; }
     }
 }

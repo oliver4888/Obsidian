@@ -4,7 +4,7 @@ namespace Obsidian.Net.Packets
 {
     public class PingPong : Packet
     {
-        [Variable(VariableType.Long)]
+        [Variable(0, VariableType.Long)]
         public long Payload;
 
         public PingPong(byte[] data) : base(0x01, data) { }

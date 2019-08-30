@@ -11,10 +11,10 @@ namespace Obsidian.Net.Packets
             this.UUID = uuid;
         }
 
-        [Variable]
+        [Variable(0)]
         public Guid UUID { get; private set; } = Guid.Empty;
 
-        [Variable]
+        [Variable(1)]
         public string Username { get; private set; }
     }
 }

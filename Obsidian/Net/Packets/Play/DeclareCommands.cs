@@ -11,13 +11,13 @@ namespace Obsidian.Net.Packets
     {
         public CommandNode RootNode;
 
-        [Variable]
+        [Variable(0)]
         public List<CommandNode> Nodes { get; } = new List<CommandNode>();
 
-        [Variable]
+        [Variable(1)]
         public int RootNodeIndex = 0;
 
-        public DeclareCommands() : base(0x11, new byte[0])
+        public DeclareCommands() : base(0x11, System.Array.Empty<byte>())
         {
             this.RootNode = new CommandNode()
             {

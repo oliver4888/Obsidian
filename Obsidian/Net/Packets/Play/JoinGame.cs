@@ -6,25 +6,25 @@ namespace Obsidian.Net.Packets
 {
     public class JoinGame : Packet
     {
-        [Variable(VariableType.Int)]
+        [Variable(0, VariableType.Int)]
         public int EntityId { get; private set; }
 
-        [Variable(VariableType.UnsignedByte)]
+        [Variable(1, VariableType.UnsignedByte)]
         public Gamemode GameMode { get; private set; } = Gamemode.Survival;
 
-        [Variable(VariableType.Int)]
+        [Variable(2, VariableType.Int)]
         public Dimension Dimension { get; private set; } = Dimension.Overworld;
 
-        [Variable(VariableType.UnsignedByte)]
+        [Variable(3, VariableType.UnsignedByte)]
         public Difficulty Difficulty { get; private set; } = Difficulty.Peaceful;
 
-        [Variable]
+        [Variable(4)]
         public byte MaxPlayers { get; private set; } = 0; // Gets ignored by client
 
-        [Variable]
+        [Variable(5)]
         public string LevelType { get; private set; } = "default";
 
-        [Variable]
+        [Variable(6)]
         public bool ReducedDebugInfo { get; private set; } = false;
 
         public JoinGame(byte[] data) : base(0x25, data)

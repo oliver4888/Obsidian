@@ -8,7 +8,7 @@ namespace Obsidian.Net.Packets
         {
         }
 
-        [Variable]
+        [Variable(0)]
         public string Message { get; private set; }
     }
 }

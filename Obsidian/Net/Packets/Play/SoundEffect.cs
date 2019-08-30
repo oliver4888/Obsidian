@@ -5,7 +5,7 @@ namespace Obsidian.Net.Packets
 {
     public class SoundEffect : Packet
     {
-        public SoundEffect(int soundId, Position location, SoundCategory category = SoundCategory.Master, float pitch = 1.0f, float volume = 1f) : base(0x4D, new byte[0])
+        public SoundEffect(int soundId, Position location, SoundCategory category = SoundCategory.Master, float pitch = 1.0f, float volume = 1f) : base(0x4D, System.Array.Empty<byte>())
         {
             this.SoundId = soundId;
             this.X = (int)location.X;
@@ -16,25 +16,25 @@ namespace Obsidian.Net.Packets
             this.Volume = volume;
         }
 
-        [Variable]
+        [Variable(0)]
         public int SoundId { get; set; }
 
-        [Variable]
+        [Variable(1)]
         public SoundCategory Category { get; set; }
 
-        [Variable]
+        [Variable(2)]
         public int X { get; set; }
 
-        [Variable]
+        [Variable(3)]
         public int Y { get; set; }
 
-        [Variable]
+        [Variable(4)]
         public int Z { get; set; }
 
-        [Variable]
+        [Variable(5)]
         public float Volume { get; set; }
 
-        [Variable]
+        [Variable(6)]
         public float Pitch { get; set; }
 
 
