@@ -274,7 +274,7 @@ namespace Obsidian
                             if (packet == null)
                                 throw new InvalidOperationException();
 
-                            var handshake = await PacketSerializer.DeserializeAsync(new Handshake(packet.PacketData));
+                            var handshake = await PacketSerializer.DeserializeAsync<Handshake>(packet);
 
                             var nextState = handshake.NextState;
 
@@ -304,7 +304,7 @@ namespace Obsidian
                                 break;
 
                             case 0x00:
-                                var loginStart = await PacketSerializer.DeserializeAsync(new LoginStart(packet.PacketData));
+                                var loginStart = await PacketSerializer.DeserializeAsync<LoginStart>(packet);
 
                                 string username = loginStart.Username;
 
@@ -344,7 +344,7 @@ namespace Obsidian
                                 break;
 
                             case 0x01:
-                                var encryptionResponse = await PacketSerializer.DeserializeAsync(new EncryptionResponse(packet.PacketData));
+                                var encryptionResponse = await PacketSerializer.DeserializeAsync<EncryptionResponse>(packet);
 
                                 JoinedResponse response;
 

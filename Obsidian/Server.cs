@@ -198,7 +198,7 @@ namespace Obsidian
 
         public T LoadConfig<T>(IPluginClass plugin)
         {
-            string path = GetPath(plugin);
+            string path = GetPluginPath(plugin);
 
             if (!System.IO.File.Exists(path))
             {
@@ -211,52 +211,15 @@ namespace Obsidian
 
         public void SaveConfig(IPluginClass plugin, object config)
         {
-            string path = GetPath(plugin);
+            string path = GetPluginPath(plugin);
             string json = JsonConvert.SerializeObject(config);
             System.IO.File.WriteAllText(path, json);
         }
 
-        private string GetPath(IPluginClass plugin)
+        private string GetPluginPath(IPluginClass plugin)
         {
             string path = plugin.GetType().Assembly.Location;
             return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path), System.IO.Path.GetFileNameWithoutExtension(path) + ".json");
-        }
-
-        public async Task SendNewPlayer(int id, Guid uuid, Transform position)
-        {
-            foreach (var clnt in this.Clients.Where(x => x.State == ClientState.Play).ToList())
-            {
-                if (clnt.PlayerId == id)
-                    continue;
-
-                await clnt.SendEntity(new EntityPacket { Id = id });
-                await clnt.SendPlayerAsync(id, uuid, position);
-            }
-        }
-
-        public async Task SendNewPlayer(int id, string uuid, Transform position)
-        {
-            foreach (var clnt in this.Clients.Where(x => x.State == ClientState.Play).ToList())
-            {
-                if (clnt.PlayerId == id)
-                    continue;
-                await clnt.SendEntity(new EntityPacket { Id = id });
-                await clnt.SendPlayerAsync(id, uuid, position);
-            }
-        }
-
-        public async Task AddPlayer(int id)
-        {
-            foreach (var clnt in this.Clients.Where(x => x.PlayerId != id))
-            {
-                if (clnt.PlayerId == id)
-                {
-                    Logger.LogError($"YOure not suppose to get this packet :( {id}");
-                    continue;
-                }
-
-                await clnt.SendPlayerInfoAsync();
-            }
         }
 
         public async Task ParseMessage(string message, Client source, byte position = 0)
@@ -350,26 +313,10 @@ namespace Obsidian
             Logger.LogWarning($"Cancellation has been requested. Stopping server...");
         }
 
-        private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
-        {
-            // TODO: TRY TO GRACEFULLY SHUT DOWN THE SERVER WE DONT WANT ERRORS REEEEEEEEEEE
-            Console.WriteLine("shutting down..");
-            StopServer();
-        }
-
         public void StopServer()
         {
             this.WorldGenerators.Clear(); //Clean up for memory and next boot
             this._cts.Cancel();
-        }
-
-        /// <summary>
-        /// Registers the "obsidian-vanilla" entities and objects
-        /// </summary>
-        private void RegisterDefault()
-        {
-            Register(new SuperflatGenerator());
-            Register(new TestBlocksGenerator());
         }
 
         /// <summary>
@@ -392,6 +339,22 @@ namespace Obsidian
                         break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Registers the "obsidian-vanilla" entities and objects
+        /// </summary>
+        private void RegisterDefault()
+        {
+            Register(new SuperflatGenerator());
+            Register(new TestBlocksGenerator());
+        }
+
+        private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        {
+            // TODO: TRY TO GRACEFULLY SHUT DOWN THE SERVER WE DONT WANT ERRORS REEEEEEEEEEE
+            Console.WriteLine("shutting down..");
+            StopServer();
         }
     }
 }

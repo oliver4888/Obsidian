@@ -4,7 +4,6 @@ using Obsidian.Net;
 using Obsidian.Net.Packets;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -13,98 +12,7 @@ namespace Obsidian.Util
 {
     public static class PacketSerializer
     {
-        private class Variable
-        {
-            public Variable(object info, VariableAttribute attribute)
-            {
-                this.Info = info ?? throw new ArgumentNullException(nameof(info));
-                this.Attribute = attribute ?? throw new ArgumentNullException(nameof(attribute));
-            }
-
-            public object Info { get; }
-
-            public VariableAttribute Attribute { get; }
-
-            public VariableType Type
-            {
-                get
-                {
-                    VariableType variableType = Attribute.Type;
-
-                    if (variableType == VariableType.Auto)
-                    {
-                        Type type = GetValueType();
-
-                        if (type == typeof(bool)) return VariableType.Boolean;
-                        else if (type == typeof(byte)) return VariableType.UnsignedByte;
-                        else if (type == typeof(byte[])) return VariableType.ByteArray;
-                        else if (type == typeof(ChatMessage)) return VariableType.Chat;
-                        else if (type == typeof(double)) return VariableType.Double;
-                        else if (type == typeof(float)) return VariableType.Float;
-                        else if (type == typeof(Guid)) return VariableType.UUID;
-                        else if (type == typeof(int)) return VariableType.VarInt;
-                        else if (type == typeof(long)) return VariableType.VarLong;
-                        else if (type == typeof(Position)) return VariableType.Position;
-                        else if (type == typeof(sbyte)) return VariableType.Byte;
-                        else if (type == typeof(short)) return VariableType.Short;
-                        else if (type == typeof(string)) return VariableType.String;
-                        else if (type == typeof(Transform)) return VariableType.Transform;
-                        else if (type == typeof(ushort)) return VariableType.UnsignedShort;
-                        else if (type.IsEnum) return VariableType.VarInt;
-                        else Console.WriteLine($"Failed to get type: {type.Name}");
-                    }
-
-                    return variableType;
-                }
-            }
-
-            public Type GetValueType()
-            {
-                if (Info is PropertyInfo propertyInfo)
-                {
-                    return propertyInfo.PropertyType;
-                }
-                else if (Info is FieldInfo fieldInfo)
-                {
-                    return fieldInfo.FieldType;
-                }
-
-                Debugger.Break(); //this isn't supposed to be hit.
-                throw new NotImplementedException();
-            }
-
-            public object GetValue(object obj)
-            {
-                if (Info is PropertyInfo propertyInfo)
-                {
-                    return propertyInfo.GetValue(obj);
-                }
-                else if (Info is FieldInfo fieldInfo)
-                {
-                    return fieldInfo.GetValue(obj);
-                }
-
-                Debugger.Break(); //this isn't supposed to be hit.
-                throw new NotImplementedException();
-            }
-
-            public void SetValue(object obj, object value)
-            {
-                if (Info is PropertyInfo propertyInfo)
-                {
-                    propertyInfo.SetValue(obj, value);
-                    return;
-                }
-                else if (Info is FieldInfo fieldInfo)
-                {
-                    fieldInfo.SetValue(obj, value);
-                    return;
-                }
-
-                Debugger.Break(); //this isn't supposed to be hit.
-                throw new NotImplementedException();
-            }
-        }
+        private static readonly Logger logger = new Logger("Serialzer", LogLevel.Debug);
 
         private static async Task<object> ReadAsync(MinecraftStream stream, Variable var)
         {
@@ -228,11 +136,11 @@ namespace Obsidian.Util
             }
         }
 
-        private static Logger logger = new Logger("Serialzer", LogLevel.Debug);
-
-        public static async Task<T> DeserializeAsync<T>(T packet) where T : Packet
+        public static async Task<T> DeserializeAsync<T>(Packet packet) where T : Packet
         {
-            List<Variable> variables = GetVariables(packet);
+            T newPacket = default;
+
+            List<Variable> variables = GetVariables(newPacket);
 
             using (var stream = new MinecraftStream(packet.PacketData))
             {
@@ -244,7 +152,7 @@ namespace Obsidian.Util
                 }
             }
 
-            return (T)Convert.ChangeType(packet, typeof(T));
+            return newPacket;
         }
 
         public static async Task<Packet> ReadFromStreamAsync(MinecraftStream stream)

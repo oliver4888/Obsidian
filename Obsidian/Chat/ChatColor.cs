@@ -20,7 +20,6 @@ public struct ChatColor
 
     public override string ToString() => "§" + this.Code;
     
-
     //0-9
     public static readonly ChatColor Black       = new ChatColor('0', "black",          Color.FromArgb(0,   0,   0));
     public static readonly ChatColor DarkBlue    = new ChatColor('1', "dark_blue",      Color.FromArgb(0,   0,   42));

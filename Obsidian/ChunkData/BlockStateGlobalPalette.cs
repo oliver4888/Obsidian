@@ -1,5 +1,6 @@
 ﻿using Obsidian.Net;
 using Obsidian.Util.Registry;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -29,7 +30,7 @@ namespace Obsidian.BlockData
 
         public Task<byte[]> ToArrayAsync()
         {
-            return Task.FromResult(new byte[0]);
+            return Task.FromResult(Array.Empty<byte>());
         }
     }
 
