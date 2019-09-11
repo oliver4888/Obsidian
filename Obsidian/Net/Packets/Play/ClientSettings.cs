@@ -1,13 +1,12 @@
 using Obsidian.Util;
-using System.Threading.Tasks;
+using System;
 
 namespace Obsidian.Net.Packets
 {
     public class ClientSettings : Packet
     {
-        public ClientSettings(byte[] data) : base(0x04, data)
-        {
-        }
+        public ClientSettings() : base(0x04, Array.Empty<byte>()) { }
+        public ClientSettings(byte[] data) : base(0x04, data) { }
 
         [Variable(0)]
         public string Locale { get; private set; }

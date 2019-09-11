@@ -1,5 +1,4 @@
 ﻿using Obsidian.Chat;
-using Obsidian.Logging;
 using System;
 using System.Diagnostics;
 using System.Reflection;

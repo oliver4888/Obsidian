@@ -24,9 +24,8 @@ namespace Obsidian.Net.Packets
             this.TeleportId = tpId;
         }
 
-        public PlayerPositionLook(byte[] data) : base(0x32, data)
-        {
-        }
+        public PlayerPositionLook() : base(0x32, Array.Empty<byte>()) { }
+        public PlayerPositionLook(byte[] data) : base(0x32, data) { }
 
         [Variable(0)]
         public Transform Transform { get; set; }

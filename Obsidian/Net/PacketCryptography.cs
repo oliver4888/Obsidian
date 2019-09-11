@@ -24,7 +24,8 @@ namespace Obsidian.Util
         //https://gist.github.com/ammaraskar/7b4a3f73bee9dc4136539644a0f27e63
         public static string MinecraftShaDigest(byte[] data)
         {
-            var hash = new SHA1Managed().ComputeHash(data);
+            using var sham = new SHA1Managed();
+            var hash = sham.ComputeHash(data);
             // Reverse the bytes since BigInteger uses little endian
             Array.Reverse(hash);
 
@@ -80,7 +81,7 @@ namespace Obsidian.Util
         public static byte[] GetRandomToken()
         {
             var token = new byte[4];
-            var provider = new RNGCryptoServiceProvider();
+            using var provider = new RNGCryptoServiceProvider();
             
             provider.GetBytes(token);
             VerifyToken = token;

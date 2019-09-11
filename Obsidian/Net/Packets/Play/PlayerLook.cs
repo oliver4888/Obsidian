@@ -1,4 +1,5 @@
 ﻿using Obsidian.Util;
+using System;
 
 namespace Obsidian.Net.Packets
 {
@@ -11,9 +12,8 @@ namespace Obsidian.Net.Packets
             this.OnGround = onground;
         }*/
 
-        public PlayerLook(byte[] data) : base(0x00, data)
-        {
-        }
+        public PlayerLook() : base(0x00, Array.Empty<byte>()) { }
+        public PlayerLook(byte[] data) : base(0x00, data) { }
 
         [Variable(0)]
         public float Yaw { get; private set; } = 0;

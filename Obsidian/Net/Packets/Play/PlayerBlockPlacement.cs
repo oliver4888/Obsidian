@@ -1,5 +1,6 @@
 ﻿using Obsidian.Util;
 using Obsidian.Util.DataTypes;
+using System;
 
 namespace Obsidian.Net.Packets
 {
@@ -33,6 +34,7 @@ namespace Obsidian.Net.Packets
             CursorZ = cursorz;
         }
 
+        public PlayerBlockPlacement() : base(0x29, Array.Empty<byte>()) { }
         public PlayerBlockPlacement(byte[] data) : base(0x29, data) { }
     }
 }

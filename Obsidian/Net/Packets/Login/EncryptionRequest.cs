@@ -19,7 +19,7 @@ namespace Obsidian.Net.Packets
         [Variable(4)]
         public byte[] VerifyToken { get; private set; }
 
-        public EncryptionRequest(byte[] publicKey, byte[] verifyToken) : base(0x01, new byte[0])
+        public EncryptionRequest(byte[] publicKey, byte[] verifyToken) : base(0x01, System.Array.Empty<byte>())
         {
             this.PublicKey = publicKey;
             this.KeyLength = publicKey.Length;

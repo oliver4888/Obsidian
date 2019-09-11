@@ -28,6 +28,7 @@ namespace Obsidian.Util
                 case VariableType.UnsignedShort: return await stream.ReadUnsignedShortAsync();
                 case VariableType.String: return await stream.ReadStringAsync();
                 case VariableType.Array: return await stream.ReadUInt8ArrayAsync(var.Attribute.Size);
+                case VariableType.ByteArray: return await stream.ReadUInt8ArrayAsync(var.Attribute.Size);
                 case VariableType.Position: return await stream.ReadPositionAsync();
                 case VariableType.Boolean: return await stream.ReadBooleanAsync();
                 case VariableType.Float: return await stream.ReadFloatAsync();
@@ -66,7 +67,7 @@ namespace Obsidian.Util
             }
         }
 
-        private static List<Variable> GetVariables<T>(T packet) where T : Packet
+        private static List<Variable> GetVariables(object packet)
         {
             var variables = new List<Variable>();
 
@@ -101,55 +102,50 @@ namespace Obsidian.Util
         {
             List<Variable> variables = GetVariables(packet);
 
-            using (var stream = new MinecraftStream())
+            using var stream = new MinecraftStream();
+            foreach (Variable variable in variables.OrderBy(x => x.Attribute.Order))
             {
-                foreach (Variable variable in variables.OrderBy(x => x.Attribute.Order))
+                object value = variable.GetValue(packet);
+
+                try
                 {
-
-                    object value = variable.GetValue(packet);
-
-                    Console.WriteLine(variable.Type);
-
-                    try
+                    if (packet is EncryptionRequest && variable.Type == VariableType.String)
                     {
-                        if (packet is EncryptionRequest && variable.Type == VariableType.String)
-                        {
-                            await stream.WriteStringAsync(string.Empty);
-                            continue;
-                        }
+                        await stream.WriteStringAsync(string.Empty);
+                        continue;
+                    }
 
-                        await WriteAsync(stream, variable, value);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message + ": " + e.StackTrace);
-                    }
+                    await WriteAsync(stream, variable, value);
                 }
-
-                var data = stream.ToArray();
-
-                int packetLength = data.Length + packet.PacketId.GetVarintLength();
-
-                await outStream.WriteVarIntAsync(packetLength);
-                await outStream.WriteVarIntAsync(packet.PacketId);
-                await outStream.WriteAsync(data);
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message + ": " + e.StackTrace);
+                }
             }
+
+            var data = stream.ToArray();
+
+            int packetLength = data.Length + packet.PacketId.GetVarintLength();
+
+            await outStream.WriteVarIntAsync(packetLength);
+            await outStream.WriteVarIntAsync(packet.PacketId);
+            await outStream.WriteAsync(data);
         }
 
-        public static async Task<T> DeserializeAsync<T>(Packet packet) where T : Packet
+        public static async Task<T> DeserializeAsync<T>(Packet packet) where T : new()
         {
-            T newPacket = default;
+            T newPacket = new T();
 
             List<Variable> variables = GetVariables(newPacket);
 
-            using (var stream = new MinecraftStream(packet.PacketData))
-            {
-                foreach (Variable variable in variables)
-                {
-                    var value = await ReadAsync(stream, variable);
+            using var stream = new MinecraftStream(packet.PacketData);
 
-                    variable.SetValue(packet, value);
-                }
+            foreach (Variable variable in variables)
+            {
+                var value = await ReadAsync(stream, variable);
+
+                variable.SetValue(newPacket, value);
+                Console.WriteLine(variable.Type);
             }
 
             return newPacket;
@@ -163,25 +159,24 @@ namespace Obsidian.Util
             await stream.ReadAsync(receivedData, 0, length);
 
             int packetId = 0;
-            byte[] packetData = new byte[0];
+            byte[] packetData = Array.Empty<byte>();
 
-            using (var packetStream = new MinecraftStream(receivedData))
+            using var packetStream = new MinecraftStream(receivedData);
+
+            try
             {
-                try
-                {
-                    packetId = await packetStream.ReadVarIntAsync();
-                    int arlen = 0;
+                packetId = await packetStream.ReadVarIntAsync();
+                int arlen = 0;
 
-                    if (length - packetId.GetVarintLength() > -1)
-                        arlen = length - packetId.GetVarintLength();
+                if (length - packetId.GetVarintLength() > -1)
+                    arlen = length - packetId.GetVarintLength();
 
-                    packetData = new byte[arlen];
-                    await packetStream.ReadAsync(packetData, 0, packetData.Length);
-                }
-                catch
-                {
-                    throw;
-                }
+                packetData = new byte[arlen];
+                await packetStream.ReadAsync(packetData, 0, packetData.Length);
+            }
+            catch
+            {
+                throw;
             }
 
             return new EmptyPacket(packetId, packetData);

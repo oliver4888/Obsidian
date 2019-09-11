@@ -106,12 +106,6 @@ namespace Obsidian
             this.Logger.LogDebug($"Spawned entity with id {id} for player {this.Player.Username}");
         }
 
-        internal async Task SendEntity(EntityPacket packet)
-        {
-            await this.SendPacketAsync(packet, true);
-            this.Logger.LogDebug($"Sent entity with id {packet.Id} for player {this.Player.Username}");
-        }
-
         internal async Task SendDeclareCommandsAsync()
         {
             var packet = new DeclareCommands();
@@ -191,37 +185,6 @@ namespace Obsidian
 
             await this.SendPacketAsync(new PlayerInfo(0, list), true);
             this.Logger.LogDebug($"Sent Player Info packet. from {this.Player.Username}");
-        }
-
-        internal async Task SendPlayerAsync(int id, Guid uuid, Transform pos)
-        {
-            await this.SendPacketAsync(new SpawnPlayer
-            {
-                Id = id,
-
-                Uuid = uuid,
-
-                Tranform = pos,
-
-                Player = this.Player
-            }, true);
-
-            this.Logger.LogDebug("New player spawned!");
-        }
-
-        internal async Task SendPlayerAsync(int id, string uuid, Transform pos)
-        {
-            await this.SendPacketAsync(new SpawnPlayer
-            {
-                Id = id,
-
-                Uuid3 = uuid,
-
-                Tranform = pos,
-
-                Player = this.Player
-            }, true);
-            this.Logger.LogDebug("New player spawned!");
         }
 
         internal async Task SendPlayerListHeaderFooterAsync(ChatMessage header, ChatMessage footer)
@@ -344,7 +307,11 @@ namespace Obsidian
                                 break;
 
                             case 0x01:
-                                var encryptionResponse = await PacketSerializer.DeserializeAsync<EncryptionResponse>(packet);
+                                
+                                var encryptionResponse = new EncryptionResponse(packet.PacketData);
+                                await encryptionResponse.DeserializeAsync();
+
+                                Console.WriteLine($"Shared secret length: {encryptionResponse.SharedSecret.Length}");
 
                                 JoinedResponse response;
 
@@ -408,9 +375,11 @@ namespace Obsidian
             Logger.LogMessage($"Disconnected client");
 
             if (this.IsPlaying)
+            {
                 await this.OriginServer.Events.InvokePlayerLeave(new PlayerLeaveEventArgs(this));
 
-            this.OriginServer.Broadcast(string.Format(this.Config.LeaveMessage, this.Player.Username));
+                this.OriginServer.Broadcast(string.Format(this.Config.LeaveMessage, this.Player.Username));
+            }
 
             this.Player = null;
 

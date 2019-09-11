@@ -4,11 +4,9 @@ namespace Obsidian.Net.Packets
 {
     public class LoginStart : Packet
     {
-        public LoginStart(string username) : base(0x00, new byte[0]) => this.Username = username;
+        public LoginStart() : base(0x00, System.Array.Empty<byte>()) { }
 
-        public LoginStart(byte[] data) : base(0x00, data)
-        {
-        }
+        public LoginStart(byte[] data) : base(0x00, data) { }
 
         [Variable(0)]
         public string Username { get; private set; }

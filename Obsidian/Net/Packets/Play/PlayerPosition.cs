@@ -1,4 +1,5 @@
 ﻿using Obsidian.Util;
+using System;
 
 namespace Obsidian.Net.Packets
 {
@@ -12,9 +13,8 @@ namespace Obsidian.Net.Packets
             this.OnGround = onground;
         }
 
-        public PlayerPosition(byte[] data) : base(0x10, data)
-        {
-        }
+        public PlayerPosition() : base(0x10, Array.Empty<byte>()) { }
+        public PlayerPosition(byte[] data) : base(0x10, data) { }
 
         [Variable(0)]
         public double X { get; set; }
