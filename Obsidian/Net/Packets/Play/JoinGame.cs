@@ -1,5 +1,4 @@
-﻿using Obsidian.Entities;
-using Obsidian.PlayerData;
+﻿using Obsidian.PlayerData;
 using Obsidian.Util;
 
 namespace Obsidian.Net.Packets
@@ -27,11 +26,9 @@ namespace Obsidian.Net.Packets
         [Variable(6)]
         public bool ReducedDebugInfo { get; private set; } = false;
 
-        public JoinGame(byte[] data) : base(0x25, data)
-        {
-        }
+        public JoinGame(byte[] data) : base(0x25, data) { }
 
-        public JoinGame(int entityid, Gamemode gamemode, Dimension dimension, Difficulty difficulty, string leveltype, bool debugging) : base(0x25, new byte[0])
+        public JoinGame(int entityid, Gamemode gamemode, Dimension dimension, Difficulty difficulty, string leveltype, bool debugging) : base(0x25, System.Array.Empty<byte>())
         {
             this.EntityId = entityid;
             this.GameMode = gamemode;

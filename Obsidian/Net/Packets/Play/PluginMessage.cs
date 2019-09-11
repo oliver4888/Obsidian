@@ -27,12 +27,10 @@ namespace Obsidian.Net.Packets
 
         public async override Task DeserializeAsync()
         {
-            using (var stream = new MinecraftStream(this.PacketData))
-            {
-                this.Channel = await stream.ReadIdentifierAsync();
+            using var stream = new MinecraftStream(this.PacketData);
+            this.Channel = await stream.ReadIdentifierAsync();
 
-                await Handlers.First(h => h.Channel == this.Channel).HandleAsync(stream);
-            }
+            await Handlers.First(h => h.Channel == this.Channel).HandleAsync(stream);
         }
     }
 

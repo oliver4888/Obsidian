@@ -3,6 +3,7 @@ using Obsidian.Logging;
 using Obsidian.Net;
 using Obsidian.Net.Packets;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -62,8 +63,17 @@ namespace Obsidian.Util
 
                 default:
                 case VariableType.Transform: //TODO: add writing transforms
-                case VariableType.Array: //TODO: add writing int arrays
-                case VariableType.List: logger.LogWarning($"Failed to read type:{var.Type}..."); break; //TODO: Add list VariableType
+                case VariableType.Array: logger.LogWarning($"Failed to read type:{var.Type}..."); break;//TODO: add writing int arrays
+                case VariableType.List:
+                    var list = (IList)value;
+                    //var arg = list.GetType().GetGenericArguments()[0];
+
+                    foreach(object obj in list)
+                    {
+                        
+                    }
+
+                    break;
             }
         }
 

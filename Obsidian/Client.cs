@@ -311,8 +311,6 @@ namespace Obsidian
                                 var encryptionResponse = new EncryptionResponse(packet.PacketData);
                                 await encryptionResponse.DeserializeAsync();
 
-                                Console.WriteLine($"Shared secret length: {encryptionResponse.SharedSecret.Length}");
-
                                 JoinedResponse response;
 
                                 this.SharedKey = PacketCryptography.Decrypt(encryptionResponse.SharedSecret);

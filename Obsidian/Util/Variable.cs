@@ -1,5 +1,7 @@
 ﻿using Obsidian.Chat;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 
@@ -60,6 +62,7 @@ namespace Obsidian.Util
                     else if (type == typeof(Transform)) return VariableType.Transform;
                     else if (type == typeof(ushort)) return VariableType.UnsignedShort;
                     else if (type.IsEnum) return VariableType.VarInt;
+                    else if (type is IList && type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(List<>))) return VariableType.List;
                     else Console.WriteLine($"Failed to get type: {type.Name}");
                 }
 
