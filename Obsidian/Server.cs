@@ -15,6 +15,7 @@ using Qmmands;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -260,6 +261,12 @@ namespace Obsidian
                 Logger.LogError("Incompatible Config: Multiplayer debug mode can't be enabled at the same time as online mode since usernames will be overwritten");
                 StopServer();
                 return;
+            }
+
+            if (!Directory.Exists(Path))
+            {
+                Directory.CreateDirectory(Path);
+                Logger.LogMessage("Server directory created");
             }
 
             Logger.LogMessage($"Loading operator list...");

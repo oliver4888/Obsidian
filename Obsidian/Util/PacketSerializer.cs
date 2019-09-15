@@ -179,8 +179,8 @@ namespace Obsidian.Util
 
             int packetLength = data.Length + packet.PacketId.GetVarintLength();
 
-            await outStream.WriteVarIntAsync(packetLength);
-            await outStream.WriteVarIntAsync(packet.PacketId);
+            //await outStream.WriteVarIntAsync(packetLength);
+            //await outStream.WriteVarIntAsync(packet.PacketId);
             await outStream.WriteAsync(data);
         }
 
