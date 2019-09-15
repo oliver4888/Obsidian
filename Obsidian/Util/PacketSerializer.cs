@@ -65,7 +65,7 @@ namespace Obsidian.Util
 
                 default:
                 case VariableType.Transform: //TODO: add writing transforms
-                case VariableType.Array: logger.LogWarning($"Failed to read type:{var.Type}..."); break;//TODO: add writing int arrays
+                case VariableType.Array: logger.LogWarning($"Failed to read type: {var.Type}..."); break;//TODO: add writing int arrays
                 case VariableType.List:
                     var list = (IList)value;
                     var arg = list.GetType().GetGenericArguments()[0];
@@ -73,6 +73,7 @@ namespace Obsidian.Util
                     //Checking what the list takes
                     if (arg.GetType() == typeof(CommandNode))
                     {
+                        logger.LogDebug("Command Node list");
                         var nodes = list.Cast<CommandNode>().ToList();
 
                         foreach (var obj in nodes)
@@ -107,6 +108,7 @@ namespace Obsidian.Util
                     }
                     else if (arg.GetType() == typeof(PlayerInfoAction))
                     {
+                        logger.LogDebug("PlayerInfoAction  list");
                         var actions = list.Cast<PlayerInfoAction>().ToList();
 
                         foreach (var action in actions)
@@ -195,7 +197,6 @@ namespace Obsidian.Util
                 var value = await ReadAsync(stream, variable);
 
                 variable.SetValue(newPacket, value);
-                Console.WriteLine(variable.Type);
             }
 
             return newPacket;

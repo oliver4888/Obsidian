@@ -10,7 +10,7 @@ namespace Obsidian.Net.Packets
 
         public RequestResponse(ServerStatus status) : base(0x00, System.Array.Empty<byte>()) => this.Json = JsonConvert.SerializeObject(status);
 
-        [Variable(0, VariableType.String)]
+        [Variable(0)]
         public string Json;
     }
 }

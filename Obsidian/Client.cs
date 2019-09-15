@@ -10,7 +10,6 @@ using Obsidian.Net.Packets.Play;
 using Obsidian.PlayerData;
 using Obsidian.PlayerData.Info;
 using Obsidian.Util;
-
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -241,8 +240,6 @@ namespace Obsidian
 
                             var nextState = handshake.NextState;
 
-                            this.Logger.LogWarning(nextState.ToString());
-
                             if (nextState != ClientState.Status && nextState != ClientState.Login)
                             {
                                 this.Logger.LogDebug($"Client sent unexpected state ({nextState}), forcing it to disconnect");
@@ -307,7 +304,7 @@ namespace Obsidian
                                 break;
 
                             case 0x01:
-                                
+
                                 var encryptionResponse = new EncryptionResponse(packet.PacketData);
                                 await encryptionResponse.DeserializeAsync();
 
@@ -413,8 +410,8 @@ namespace Obsidian
             this.OriginServer.Broadcast(string.Format(this.Config.JoinMessage, this.Player.Username));
             await this.OriginServer.Events.InvokePlayerJoin(new PlayerJoinEventArgs(this, DateTimeOffset.Now));
 
-            await this.SendDeclareCommandsAsync();
-            await this.SendPlayerInfoAsync();
+            //await this.SendDeclareCommandsAsync();
+            //await this.SendPlayerInfoAsync();
 
             await this.SendPlayerListHeaderFooterAsync(string.IsNullOrWhiteSpace(OriginServer.Config.Header) ? null : ChatMessage.Simple(OriginServer.Config.Header),
                                                        string.IsNullOrWhiteSpace(OriginServer.Config.Footer) ? null : ChatMessage.Simple(OriginServer.Config.Footer));
@@ -428,37 +425,6 @@ namespace Obsidian
             //await OriginServer.world.resendBaseChunksAsync(10, 0, 0, 0, 0, this);
 
             this.Logger.LogDebug("Sent chunk");
-
-            /*if (this.OriginServer.Config.OnlineMode)
-            {
-                await this.OriginServer.SendNewPlayer(this.PlayerId, this.Player.Uuid, new Transform
-                {
-                    X = 0,
-
-                    Y = 105,
-
-                    Z = 0,
-
-                    Pitch = 1,
-
-                    Yaw = 1
-                });
-            }
-            else
-            {
-                await this.OriginServer.SendNewPlayer(this.PlayerId, this.Player.Uuid3, new Transform
-                {
-                    X = 0,
-
-                    Y = 105,
-
-                    Z = 0,
-
-                    Pitch = 1,
-
-                    Yaw = 1
-                });
-            }*/
         }
 
         public async Task SendChunkAsync(Chunk chunk)
@@ -477,6 +443,9 @@ namespace Obsidian
                     for (int z = 0; z < 16; z++)
                     {
                         var block = chunk.Blocks[x, y, z];
+
+                        if (block == null)
+                            continue;
 
                         chunkData.Data[6].BlockStateContainer.Set(x, y, z, block);
                     }
@@ -503,8 +472,6 @@ namespace Obsidian
 
                     return;
                 }
-
-                this.Logger.LogDebug("Trying to serialize packet");
                 await PacketSerializer.SerializeAsync(packet, this.MinecraftStream);
             }
         }

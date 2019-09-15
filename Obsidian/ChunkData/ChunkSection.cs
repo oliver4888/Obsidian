@@ -81,15 +81,13 @@ namespace Obsidian.ChunkData
 
         public async Task<byte[]> ToArrayAsync()
         {
-            using (var stream = new MinecraftStream())
-            {
-                await stream.WriteByteAsync((sbyte)BitsPerEntry);
+            using var stream = new MinecraftStream();
+            await stream.WriteByteAsync((sbyte)BitsPerEntry);
 
-                await stream.WriteVarIntAsync(this.BlockStorage.Storage.Length);
-                await stream.WriteLongArrayAsync(this.BlockStorage.Storage);
+            await stream.WriteVarIntAsync(this.BlockStorage.Storage.Length);
+            await stream.WriteLongArrayAsync(this.BlockStorage.Storage);
 
-                return stream.ToArray();
-            }
+            return stream.ToArray();
         }
     }
 }

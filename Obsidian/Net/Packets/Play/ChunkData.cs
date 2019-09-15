@@ -16,9 +16,9 @@ namespace Obsidian.Net.Packets
         public List<NbtTag> BlockEntities { get; }
 
         public int changedSectionFilter = 0b1111111111111111;
-        public ChunkDataPacket() : base(0x22, new byte[0]) { }
+        public ChunkDataPacket() : base(0x22, Array.Empty<byte>()) { }
 
-        public ChunkDataPacket(int chunkX, int chunkZ) : base(0x22, new byte[0])
+        public ChunkDataPacket(int chunkX, int chunkZ) : base(0x22, Array.Empty<byte>())
         {
             this.ChunkX = chunkX;
             this.ChunkZ = chunkZ;
@@ -32,62 +32,61 @@ namespace Obsidian.Net.Packets
         {
             bool fullChunk = true; // changedSectionFilter == 0b1111111111111111;
 
-            using (var stream = new MinecraftStream())
+            using var stream = new MinecraftStream();
+            await stream.WriteIntAsync(this.ChunkX);
+            await stream.WriteIntAsync(this.ChunkZ);
+
+            await stream.WriteBooleanAsync(fullChunk);
+
+            int availableSections = 0;
+
+            byte[] data;
+            using (var dataStream = new MinecraftStream())
             {
-                await stream.WriteIntAsync(this.ChunkX);
-                await stream.WriteIntAsync(this.ChunkZ);
-
-                await stream.WriteBooleanAsync(fullChunk);
-
-                int availableSections = 0;
-
-                byte[] data;
-                using (var dataStream = new MinecraftStream())
+                var chunkSectionY = 0;
+                foreach (ChunkSection section in Data)
                 {
-                    var chunkSectionY = 0;
-                    foreach (ChunkSection section in Data)
-                    {
-                        if (section == null)
-                            throw new InvalidOperationException();
-
-                        if (fullChunk || (changedSectionFilter & (1 << chunkSectionY)) != 0) {
-
-                            availableSections |= 1 << chunkSectionY;
-
-                            await dataStream.WriteAsync(await section.ToArrayAsync());
-
-                        }
-                        chunkSectionY++;
-                    }
-                    if(chunkSectionY != 16)
+                    if (section == null)
                         throw new InvalidOperationException();
 
-                    if (fullChunk)
+                    if (fullChunk || (changedSectionFilter & (1 << chunkSectionY)) != 0)
                     {
-                        if(Biomes.Count != 16 * 16)
-                            throw new InvalidOperationException();
 
-                        foreach (int biomeId in Biomes)
-                        {
-                            await dataStream.WriteIntAsync(biomeId);
-                        }
+                        availableSections |= 1 << chunkSectionY;
+
+                        await dataStream.WriteAsync(await section.ToArrayAsync());
+
                     }
-
-                    data = dataStream.ToArray();
+                    chunkSectionY++;
                 }
-                await stream.WriteVarIntAsync(availableSections);
+                if (chunkSectionY != 16)
+                    throw new InvalidOperationException();
 
-                await stream.WriteVarIntAsync(data.Length);
-                await stream.WriteAsync(data);
-
-                await stream.WriteVarIntAsync(BlockEntities.Count);
-                foreach (NbtTag entity in BlockEntities)
+                if (fullChunk)
                 {
-                    await stream.WriteNbtAsync(entity);
+                    if (Biomes.Count != 16 * 16)
+                        throw new InvalidOperationException();
+
+                    foreach (int biomeId in Biomes)
+                    {
+                        await dataStream.WriteIntAsync(biomeId);
+                    }
                 }
 
-                return stream.ToArray();
+                data = dataStream.ToArray();
             }
+            await stream.WriteVarIntAsync(availableSections);
+
+            await stream.WriteVarIntAsync(data.Length);
+            await stream.WriteAsync(data);
+
+            await stream.WriteVarIntAsync(BlockEntities.Count);
+            foreach (NbtTag entity in BlockEntities)
+            {
+                await stream.WriteNbtAsync(entity);
+            }
+
+            return stream.ToArray();
         }
     }
 }
