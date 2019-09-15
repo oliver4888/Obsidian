@@ -1,8 +1,7 @@
 ﻿using Obsidian.Net;
 using Obsidian.Net.Packets;
-using System;
+using Obsidian.Util;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Obsidian.Commands
@@ -10,17 +9,18 @@ namespace Obsidian.Commands
     /// <summary>
     /// https://wiki.vg/Command_Data
     /// </summary>
+    /// TODO PLS WORK ON THIS CLASS
     public class CommandNode
     {
         public CommandNodeType Type;
 
         public List<CommandNode> Children = new List<CommandNode>();
 
+        public int Index => Owner.Nodes.IndexOf(this);
+
         public string Name;
 
         public DeclareCommands Owner;
-
-        public int Index => Owner.Nodes.IndexOf(this);
 
         public CommandParser Parser;
 

@@ -1,7 +1,9 @@
 ﻿using Obsidian.Chat;
+using Obsidian.Commands;
 using Obsidian.Logging;
 using Obsidian.Net;
 using Obsidian.Net.Packets;
+using Obsidian.PlayerData.Info;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -66,11 +68,49 @@ namespace Obsidian.Util
                 case VariableType.Array: logger.LogWarning($"Failed to read type:{var.Type}..."); break;//TODO: add writing int arrays
                 case VariableType.List:
                     var list = (IList)value;
-                    //var arg = list.GetType().GetGenericArguments()[0];
+                    var arg = list.GetType().GetGenericArguments()[0];
 
-                    foreach(object obj in list)
+                    //Checking what the list takes
+                    if (arg.GetType() == typeof(CommandNode))
                     {
-                        
+                        var nodes = list.Cast<CommandNode>().ToList();
+
+                        foreach (var obj in nodes)
+                        {
+                            /*var type = obj.Type;
+                            using var mcStream = new MinecraftStream();
+
+                            await mcStream.WriteByteAsync((sbyte)type);
+                            await mcStream.WriteVarIntAsync(obj.Children.Count);
+
+                            foreach (var child in obj.Children)
+                                await mcStream.WriteVarIntAsync(child.Index);
+
+                            if (type.HasFlag(CommandNodeType.HasRedirect))
+                                await stream.WriteVarIntAsync(0);
+
+                            if (type.HasFlag(CommandNodeType.Argument) || type.HasFlag(CommandNodeType.Literal))
+                            {
+                                if (!string.IsNullOrWhiteSpace(obj.Name))
+                                    await stream.WriteStringAsync(obj.Name);
+                            }
+
+                            if (type.HasFlag(CommandNodeType.Argument))
+                                await obj.Parser.WriteAsync(mcStream);
+
+                            await mcStream.CopyToAsync(stream);*/
+
+                            var nodeArray = await obj.ToArrayAsync();
+
+                            await stream.WriteAsync(nodeArray);
+                        }
+                    }
+                    else if (arg.GetType() == typeof(PlayerInfoAction))
+                    {
+                        var actions = list.Cast<PlayerInfoAction>().ToList();
+
+                        foreach (var action in actions)
+                            await action.WriteAsync(stream);
                     }
 
                     break;

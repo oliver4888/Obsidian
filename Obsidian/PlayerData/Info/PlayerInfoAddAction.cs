@@ -17,9 +17,9 @@ namespace Obsidian.PlayerData.Info
 
         public int Ping { get; set; }
 
-        public ChatMessage DisplayName { get; set; } = null;
-
         public bool HasDisplayName => DisplayName != null;
+
+        public ChatMessage DisplayName { get; set; } = null;
 
         public override async Task WriteAsync(MinecraftStream stream)
         {
