@@ -1,10 +1,13 @@
 ﻿using Obsidian.Concurrency;
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Reflection;
 using System.Linq;
 using Obsidian.Logging;
 using System.Threading.Tasks;
+using YamlDotNet.Serialization;
+using Exception = System.Exception;
 
 namespace Obsidian.Plugins
 {
@@ -27,35 +30,68 @@ namespace Obsidian.Plugins
                 Directory.CreateDirectory(Path);
             }
 
+            await LoadJavaPluginsAsync(logger);
+            await LoadCSharpPluginsAsync(logger);
+        }
+
+        private async Task LoadJavaPluginsAsync(AsyncLogger logger)
+        {
+            string[] files = Directory.GetFiles(Path, "*.jar");
+
+            foreach (var file in files)
+            {
+                var pluginInfo = await GetPluginInfo(file);
+                
+                var urls = new []{new java.net.URL($"file:{file}.jar")};
+                var loader = new java.net.URLClassLoader(urls);
+
+                var jarClass = java.lang.Class.forName(pluginInfo["main"], true, loader);
+                
+                jarClass.asSubclass()
+                
+                await logger.LogDebugAsync(pluginInfo.ToString());
+                
+                
+                await logger.LogMessageAsync($"Loaded plugin: {pluginInfo["name"]} by {string.Join(", ", pluginInfo["authors"])} (Java/Bukkit Plugin)");
+            }
+        }
+
+        private async Task<dynamic> GetPluginInfo(string jarFile)
+        {
+            using var archive = ZipFile.OpenRead(jarFile);
+            var pluginInfo = archive.GetEntry("plugin.yml");
+
+            if (pluginInfo == null)
+                throw new Exception($"{jarFile} doesn't contain plugin.yml");
+
+            await using var fileStream = pluginInfo.Open();
+            using var reader = new StreamReader(fileStream);
+            var deserializer = new DeserializerBuilder().Build();
+            var yaml = deserializer.Deserialize(reader);
+
+            return yaml;
+        }
+
+        private async Task LoadCSharpPluginsAsync(AsyncLogger logger)
+        {
             string[] files = Directory.GetFiles(Path, "*.dll");
             // I don't do File IO often, I just know how to do reflection from a dll
             foreach (var file in files) // don't touch pls
             {
                 var assembly = Assembly.LoadFile(file);
-                var pluginclasses = assembly.GetTypes().Where(x => typeof(IPluginClass).IsAssignableFrom(x) && x != typeof(IPluginClass));
+                var pluginclasses = assembly.GetTypes()
+                    .Where(x => typeof(IPluginClass).IsAssignableFrom(x) && x != typeof(IPluginClass));
 
                 foreach (var ptype in pluginclasses)
                 {
-                    var pluginClass = (IPluginClass)Activator.CreateInstance(ptype);
+                    var pluginClass = (IPluginClass) Activator.CreateInstance(ptype);
                     var pluginInfo = await pluginClass.InitializeAsync(Server);
                     var plugin = new Plugin(pluginInfo, pluginClass);
 
                     Plugins.Add(plugin);
-                    await logger.LogMessageAsync($"Loaded plugin: {pluginInfo.Name} by {pluginInfo.Author}");
+                    await logger.LogMessageAsync($"Loaded plugin: {pluginInfo.Name} by {pluginInfo.Author} (C#/Obsidian Plugin)");
                 }
             }
-        }
-    }
-
-    public struct Plugin
-    {
-        public PluginInfo Info { get; }
-        public IPluginClass Class { get; }
-
-        public Plugin(PluginInfo info, IPluginClass pclass)
-        {
-            this.Info = info;
-            this.Class = pclass;
         }
     }
 }
