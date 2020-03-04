@@ -1,11 +1,13 @@
 ﻿using Obsidian.Concurrency;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Linq;
 using Obsidian.Logging;
 using System.Threading.Tasks;
+using org.bukkit.plugin.java;
 using YamlDotNet.Serialization;
 using Exception = System.Exception;
 
@@ -45,12 +47,10 @@ namespace Obsidian.Plugins
                 var urls = new []{new java.net.URL($"file:{file}.jar")};
                 var loader = new java.net.URLClassLoader(urls);
 
-                var jarClass = java.lang.Class.forName(pluginInfo["main"], true, loader);
-                
-                jarClass.asSubclass()
-                
-                await logger.LogDebugAsync(pluginInfo.ToString());
-                
+                var mainClass = (string)pluginInfo["main"];
+                var jarClass = java.lang.Class.forName(mainClass, true, loader);
+                var pluginClass = jarClass.asSubclass(typeof(JavaPlugin));
+                var plugin = pluginClass.newInstance();
                 
                 await logger.LogMessageAsync($"Loaded plugin: {pluginInfo["name"]} by {string.Join(", ", pluginInfo["authors"])} (Java/Bukkit Plugin)");
             }

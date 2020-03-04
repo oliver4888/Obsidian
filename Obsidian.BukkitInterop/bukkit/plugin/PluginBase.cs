@@ -1,6 +1,6 @@
 ﻿namespace org.bukkit.plugin
 {
-    public class PluginBase : Plugin
+    public abstract class PluginBase : Plugin
     {
         
     }

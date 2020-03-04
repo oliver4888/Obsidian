@@ -25,6 +25,7 @@
     <PackageReference Include="Qmmands" Version="2.3.0" />
     <PackageReference Include="sharpcompress" Version="0.24.0" />
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
     <PackageReference Include="YamlDotNet" Version="8.1.0" />
   </ItemGroup>
 
