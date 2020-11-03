@@ -1,4 +1,5 @@
-﻿using Obsidian.Nbt.Tags;
+﻿using Obsidian.Nbt;
+using Obsidian.Nbt.Tags;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,14 +10,14 @@ namespace Obsidian.Serializer.Region
     {
         public ChunkNbtMapper()
         {
-            var blocks = new byte[4096];
+/*            var blocks = new byte[4096];
             var data = new byte[2048];
             var skylight = new byte[2048];
             var blockLight = new byte[2048];
-            byte y;
+            byte y;*/
         }
 
-        public NbtCompound ChunkStructure = new NbtCompound()
+       /* public NbtCompound ChunkStructure = new NbtCompound()
         {
             new NbtInt("DataVersion"),
             new NbtCompound("Level")
@@ -44,12 +45,16 @@ namespace Obsidian.Serializer.Region
                     new NbtCompound()
                     {
                         new NbtByte("Y"),
-                        new NbtByteArray("Blocks"),
-                        new NbtByteArray("Data"),
-                        new NbtByteArray("SkyLight"),
+                        new NbtList("Palette")
+                        {
+                            //TODO
+                            new 
+                        },
                         new NbtByteArray("BlockLight"),
+                        new NbtLongArray("BlockStates"),
+                        new NbtByteArray("SkyLight")
                     })
             }
-        };
+        };*/
     }
 }
