@@ -2,7 +2,7 @@
 {
     public class BlockBrewingStand : Block
     {
-        internal BlockBrewingStand(string name, int id) : base(name, id, Materials.BrewingStand)
+        internal BlockBrewingStand(string name, short id) : base(name, id, Materials.BrewingStand)
         {
         }
     }

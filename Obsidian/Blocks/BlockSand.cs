@@ -4,7 +4,7 @@
     {
 
 
-        internal BlockSand(string name, int id, Materials type) : base(name, id, type)
+        internal BlockSand(string name, short id, Materials type) : base(name, id, type)
         {
            
         }

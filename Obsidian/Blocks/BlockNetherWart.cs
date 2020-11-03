@@ -2,7 +2,7 @@
 {
     public class BlockNetherWart : Block
     {
-        internal BlockNetherWart(string name, int id) : base(name, id, Materials.NetherWart)
+        internal BlockNetherWart(string name, short id) : base(name, id, Materials.NetherWart)
         {
         }
     }

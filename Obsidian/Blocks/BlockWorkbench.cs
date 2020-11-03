@@ -2,7 +2,7 @@
 {
     public class BlockWorkbench : Block
     {
-        internal BlockWorkbench(string name, int id) : base(name, id, Materials.CraftingTable)
+        internal BlockWorkbench(string name, short id) : base(name, id, Materials.CraftingTable)
         {
         }
     }

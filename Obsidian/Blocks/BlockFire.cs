@@ -2,7 +2,7 @@
 {
     public class BlockFire : Block
     {
-        internal BlockFire(string name, int id) : base(name, id, Materials.Fire)
+        internal BlockFire(string name, short id) : base(name, id, Materials.Fire)
         {
         }
     }

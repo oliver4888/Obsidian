@@ -2,7 +2,7 @@
 {
     public class BlockCauldron : Block
     {
-        internal BlockCauldron(string name, int id) : base(name, id, Materials.Cauldron)
+        internal BlockCauldron(string name, short id) : base(name, id, Materials.Cauldron)
         {
         }
     }

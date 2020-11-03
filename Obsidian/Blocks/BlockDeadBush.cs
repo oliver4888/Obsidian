@@ -2,7 +2,7 @@
 {
     public class BlockDeadBush : Block
     {
-        internal BlockDeadBush(string name, int id, Materials type) : base(name, id, type)
+        internal BlockDeadBush(string name, short id, Materials type) : base(name, id, type)
         {
         }
     }

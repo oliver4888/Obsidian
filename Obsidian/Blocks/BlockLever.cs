@@ -2,7 +2,7 @@
 {
     public class BlockLever : Block
     {
-        internal BlockLever(string name, int id) : base(name, id, Materials.Lever)
+        internal BlockLever(string name, short id) : base(name, id, Materials.Lever)
         {
         }
     }

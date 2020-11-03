@@ -11,7 +11,7 @@ namespace Obsidian.Blocks
 
         public Position Location { get; set; }
 
-        internal Block(string name, int id, Materials type) : base(name, id, type) { }
+        internal Block(string name, short id, Materials type) : base(name, id, type) { }
         public void Set(Block block)
         {
             this.Id = block.Id;

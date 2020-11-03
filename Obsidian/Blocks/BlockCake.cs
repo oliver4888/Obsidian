@@ -2,7 +2,7 @@
 {
     public class BlockCake : Block
     {
-        internal BlockCake(string name, int id) : base(name, id, Materials.Cake)
+        internal BlockCake(string name, short id) : base(name, id, Materials.Cake)
         {
         }
     }

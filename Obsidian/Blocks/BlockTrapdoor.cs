@@ -2,7 +2,7 @@
 {
     public class BlockTrapdoor : Block
     {
-        internal BlockTrapdoor(string name, int id, Materials type) : base(name, id, type)
+        internal BlockTrapdoor(string name, short id, Materials type) : base(name, id, type)
         {
         }
     }

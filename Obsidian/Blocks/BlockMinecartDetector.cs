@@ -2,7 +2,7 @@
 {
     public class BlockMinecartDetector : Block
     {
-        internal BlockMinecartDetector(string name, int id, Materials type) : base(name, id, type)
+        internal BlockMinecartDetector(string name, short id, Materials type) : base(name, id, type)
         {
         }
     }

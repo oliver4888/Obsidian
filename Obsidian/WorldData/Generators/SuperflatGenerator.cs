@@ -1,5 +1,6 @@
 ﻿using Obsidian.Blocks;
 using Obsidian.Util.Registry;
+using System;
 
 namespace Obsidian.WorldData.Generators
 {
@@ -20,6 +21,8 @@ namespace Obsidian.WorldData.Generators
                     chunk.SetBlock(x1, 2, z1, Registry.GetBlock(Materials.Dirt));
                     chunk.SetBlock(x1, 1, z1, Registry.GetBlock(Materials.Dirt));
                     chunk.SetBlock(x1, 0, z1, Registry.GetBlock(Materials.Bedrock));
+
+                    chunk.Heightmaps[ChunkData.HeightmapType.MotionBlocking].Set(x1, x1, 6);
                 }
             }
 

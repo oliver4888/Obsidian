@@ -2,7 +2,7 @@
 {
     public class BlockVine : Block
     {
-        internal BlockVine(string name, int id) : base(name, id, Materials.Vine)
+        internal BlockVine(string name, short id) : base(name, id, Materials.Vine)
         {
         }
     }

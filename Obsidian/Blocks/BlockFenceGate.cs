@@ -2,7 +2,7 @@
 {
     public class BlockFenceGate : BlockFence
     {
-        internal BlockFenceGate(string name, int id, Materials type) : base(name, id, type)
+        internal BlockFenceGate(string name, short id, Materials type) : base(name, id, type)
         {
         }
     }

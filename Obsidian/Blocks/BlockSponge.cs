@@ -2,7 +2,7 @@
 {
     public class BlockSponge : Block
     {
-        internal BlockSponge(string name, int id, Materials type) : base(name, id, type)
+        internal BlockSponge(string name, short id, Materials type) : base(name, id, type)
         {
         }
     }

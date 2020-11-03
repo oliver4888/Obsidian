@@ -2,7 +2,7 @@
 {
     public class BlockRepeater : Block
     {
-        internal BlockRepeater(string name, int id) : base(name, id, Materials.Repeater)
+        internal BlockRepeater(string name, short id) : base(name, id, Materials.Repeater)
         {
         }
     }

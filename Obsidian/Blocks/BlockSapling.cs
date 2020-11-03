@@ -2,6 +2,6 @@
 {
     public class BlockSapling : Block
     {
-        internal BlockSapling(string name, int id, Materials type) : base(name, id, type) { }
+        internal BlockSapling(string name, short id, Materials type) : base(name, id, type) { }
     }
 }

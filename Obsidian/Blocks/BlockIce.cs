@@ -2,7 +2,7 @@
 {
     public class BlockIce : Block
     {
-        internal BlockIce(string name, int id, Materials type) : base(name, id, type)
+        internal BlockIce(string name, short id, Materials type) : base(name, id, type)
         {
         }
     }

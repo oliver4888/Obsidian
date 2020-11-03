@@ -2,7 +2,7 @@
 {
     public class BlockMinecartTrack : Block
     {
-        internal BlockMinecartTrack(string name, int id) : base(name, id, Materials.Rail)
+        internal BlockMinecartTrack(string name, short id) : base(name, id, Materials.Rail)
         {
         }
     }

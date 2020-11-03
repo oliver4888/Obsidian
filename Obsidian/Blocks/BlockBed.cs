@@ -2,7 +2,7 @@
 {
     public class BlockBed : Block
     {
-        internal BlockBed(string name, int id, Materials type) : base(name, id, type)
+        internal BlockBed(string name, short id, Materials type) : base(name, id, type)
         {
         }
     }

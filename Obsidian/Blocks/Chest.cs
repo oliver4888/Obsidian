@@ -2,6 +2,6 @@
 {
     public class Chest : Block
     {
-        public Chest(string name, int id, Materials type) : base(name, id, type) { }
+        public Chest(string name, short id, Materials type) : base(name, id, type) { }
     }
 }

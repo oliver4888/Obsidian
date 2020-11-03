@@ -2,7 +2,7 @@
 {
     public class BlockButton : Block
     {
-        internal BlockButton(string name, int id, Materials type) : base(name, id, type)
+        internal BlockButton(string name, short id, Materials type) : base(name, id, type)
         {
         }
     }

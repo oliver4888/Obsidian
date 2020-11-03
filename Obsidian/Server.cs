@@ -56,7 +56,7 @@ namespace Obsidian
         public const ProtocolVersion protocol = ProtocolVersion.v1_16_4;
         public ProtocolVersion Protocol => protocol;
 
-        public short TPS { get; private set; }
+        public byte TPS { get; private set; }
         public DateTimeOffset StartTime { get; private set; }
 
         public MinecraftEventHandler Events { get; }
@@ -521,7 +521,7 @@ namespace Obsidian
         {
             var keepAliveTicks = 0;
 
-            short itersPerSecond = 0;
+            byte itersPerSecond = 0;
             var stopWatch = Stopwatch.StartNew(); // for TPS measuring
 
             while (!this.cts.IsCancellationRequested)

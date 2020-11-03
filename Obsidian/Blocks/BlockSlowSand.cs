@@ -2,7 +2,7 @@
 {
     public class BlockSlowSand : Block
     {
-        internal BlockSlowSand(string name, int id) : base(name, id, Materials.SoulSand)
+        internal BlockSlowSand(string name, short id) : base(name, id, Materials.SoulSand)
         {
         }
     }

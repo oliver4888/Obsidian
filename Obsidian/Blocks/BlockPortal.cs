@@ -2,7 +2,7 @@
 {
     public class BlockPortal : Block
     {
-        internal BlockPortal(string name, int id) : base(name, id, Materials.NetherPortal)
+        internal BlockPortal(string name, short id) : base(name, id, Materials.NetherPortal)
         {
         }
     }

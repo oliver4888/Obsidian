@@ -2,7 +2,7 @@
 {
     public class BlockState
     {
-        public int Id;
+        public short Id;
 
         public string UnlocalizedName { get; }
 
@@ -10,12 +10,12 @@
 
         public bool IsAir => this.Type == Materials.Air || this.Type == Materials.CaveAir || this.Type == Materials.VoidAir;
 
-        internal BlockState(int id)
+        internal BlockState(short id)
         {
             this.Id = id;
         }
 
-        internal BlockState(string unlocalizedName, int id, Materials type)
+        internal BlockState(string unlocalizedName, short id, Materials type)
         {
             this.Id = id;
             this.UnlocalizedName = unlocalizedName;

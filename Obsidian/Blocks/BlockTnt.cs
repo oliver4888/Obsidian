@@ -2,7 +2,7 @@
 {
    public class BlockTnt : Block
     {
-        internal BlockTnt(string name, int id) : base(name, id, Materials.Tnt)
+        internal BlockTnt(string name, short id) : base(name, id, Materials.Tnt)
         {
         }
     }

@@ -2,7 +2,7 @@
 {
     public class BlockWeb : Block
     {
-        internal BlockWeb(string name, int id, Materials type) : base(name, id, type)
+        internal BlockWeb(string name, short id, Materials type) : base(name, id, type)
         {
         }
     }

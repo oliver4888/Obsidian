@@ -2,7 +2,7 @@
 {
     public class BlockTallSeaGrass : BlockSeaGrass
     {
-        internal BlockTallSeaGrass(string name, int id, Materials type) : base(name, id, type)
+        internal BlockTallSeaGrass(string name, short id, Materials type) : base(name, id, type)
         {
         }
     }

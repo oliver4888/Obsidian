@@ -2,7 +2,7 @@
 {
     public class BlockPumpkin : Block
     {
-        internal BlockPumpkin(string name, int id) : base(name, id, Materials.Pumpkin)
+        internal BlockPumpkin(string name, short id) : base(name, id, Materials.Pumpkin)
         {
         }
     }

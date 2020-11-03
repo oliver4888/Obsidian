@@ -2,7 +2,7 @@
 {
     public class BlockMobSpawner : Block
     {
-        internal BlockMobSpawner(string name, int id) : base(name, id, Materials.Spawner)
+        internal BlockMobSpawner(string name, short id) : base(name, id, Materials.Spawner)
         {
         }
     }

@@ -2,7 +2,7 @@
 {
     public class BlockCrops : Block
     {
-        internal BlockCrops(string name, int id, Materials type) : base(name, id, type)
+        internal BlockCrops(string name, short id, Materials type) : base(name, id, type)
         {
         }
     }

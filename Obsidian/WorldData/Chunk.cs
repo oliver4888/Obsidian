@@ -15,7 +15,7 @@ namespace Obsidian.WorldData
 
         public BiomeContainer BiomeContainer { get; private set; } = new BiomeContainer();
 
-        public Dictionary<short, Block> Blocks { get; private set; } = new Dictionary<short, Block>();
+        public Dictionary<short, short> Blocks { get; private set; } = new Dictionary<short, short>();
 
         public ChunkSection[] Sections { get; private set; } = new ChunkSection[16];
         public List<NbtTag> BlockEntities { get; private set; } = new List<NbtTag>();
@@ -43,7 +43,7 @@ namespace Obsidian.WorldData
         public Block GetBlock(int x, int y, int z)
         {
             var value = (short)((x << 8) | (z << 4) | y);
-            return this.Blocks.GetValueOrDefault(value) ?? this.Sections[y >> 4].GetBlock(x, y, z) ?? Registry.GetBlock(Materials.Air);
+            return Registry.GetBlock(this.Blocks.GetValueOrDefault(value)) ?? this.Sections[y >> 4].GetBlock(x, y, z) ?? Registry.GetBlock(Materials.Air);
         }
 
         public void SetBlock(Position position, Block block) => this.SetBlock((int)position.X, (int)position.Y, (int)position.Z, block);
@@ -52,33 +52,11 @@ namespace Obsidian.WorldData
         {
             var value = (short)((x << 8) | (z << 4) | y);
 
-            this.Blocks[value] = block;
+            this.Blocks[value] = (short)block.Id;
 
             this.Sections[y >> 4].SetBlock(x, y & 15, z, block);
 
            
-        }
-
-        public void CalculateHeightmap()
-        {
-            for (int x = 0; x < 16; x++)
-            {
-                for (int z = 0; z < 16; z++)
-                {
-                    var key = (short)((x << 8) | (z << 4) | 255);
-                    for (int y = 255; y >= 0; y--, key--)
-                    {
-                        if (this.Blocks.TryGetValue(key, out var block))
-                        {
-                            if (block.IsAir)
-                                continue;
-
-                            this.Heightmaps[HeightmapType.MotionBlocking].Set(x, z, y);
-                            break;
-                        }
-                    }
-                }
-            }
         }
     }
 }

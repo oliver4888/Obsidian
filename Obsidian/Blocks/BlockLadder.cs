@@ -2,7 +2,7 @@
 {
     public class BlockLadder : Block
     {
-        internal BlockLadder(string name, int id) : base(name, id, Materials.Ladder)
+        internal BlockLadder(string name, short id) : base(name, id, Materials.Ladder)
         {
         }
     }

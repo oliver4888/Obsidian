@@ -2,7 +2,7 @@
 {
     public class BlockDoor : Block
     {
-        internal BlockDoor(string name, int id, Materials type) : base(name, id, type)
+        internal BlockDoor(string name, short id, Materials type) : base(name, id, type)
         {
         }
     }

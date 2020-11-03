@@ -65,7 +65,7 @@ namespace Obsidian.Util.Registry
                         if (states.States.Length <= 0)
                             continue;
 
-                        int id = 0;
+                        short id = 0;
                         foreach (var state in states.States)
                             id = state.Default ? state.Id : states.States.First().Id;
 

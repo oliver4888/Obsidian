@@ -52,7 +52,6 @@ namespace Obsidian.Net.Packets.Play.Client
 
             await stream.WriteVarIntAsync(mask);
 
-            this.Chunk.CalculateHeightmap();
             var heightmaps = this.Chunk.Heightmaps;
 
             var writer = new NbtWriter(stream, "");

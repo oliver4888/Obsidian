@@ -2,7 +2,7 @@
 {
     public class BlockCactus : Block
     {
-        internal BlockCactus(string name, int id) : base(name, id, Materials.Cactus)
+        internal BlockCactus(string name, short id) : base(name, id, Materials.Cactus)
         {
         }
     }

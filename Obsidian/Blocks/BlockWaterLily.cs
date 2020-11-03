@@ -2,7 +2,7 @@
 {
     public class BlockWaterLily : Block
     {
-        internal BlockWaterLily(string name, int id) : base(name, id, Materials.LilyPad)
+        internal BlockWaterLily(string name, short id) : base(name, id, Materials.LilyPad)
         {
         }
     }
