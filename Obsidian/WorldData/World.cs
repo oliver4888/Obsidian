@@ -356,6 +356,7 @@ namespace Obsidian.WorldData
             }
 
             this.Regions.TryAdd(value, region);
+            region.Serialize(this.Server.Id);
 
             return region;
         }
