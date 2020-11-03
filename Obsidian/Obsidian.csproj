@@ -9,6 +9,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
+  
+    <PropertyGroup>
+   <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="PluginMessages\**" />
@@ -654,6 +658,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Obsidian.API\Obsidian.API.csproj" />
     <ProjectReference Include="..\Obsidian.Nbt\Obsidian.Nbt.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Sounds\" />
   </ItemGroup>
 
 </Project>
