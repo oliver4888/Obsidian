@@ -1,6 +1,7 @@
 ﻿using Obsidian.API;
 using Obsidian.Blocks;
 using Obsidian.Util.Collection;
+using Obsidian.Util.Registry;
 
 namespace Obsidian.ChunkData
 {
@@ -25,7 +26,9 @@ namespace Obsidian.ChunkData
 
             this.Palette = bitsPerBlock.DeterminePalette();
 
-            this.YBase = YBase;
+            this.YBase = yBase;
+
+            this.FillWithAir();
         }
 
         public Block GetBlock(Position pos) => this.GetBlock((int)pos.X, (int)pos.Y, (int)pos.Z);
@@ -33,6 +36,20 @@ namespace Obsidian.ChunkData
 
         public void SetBlock(Position pos, BlockState blockState) => this.SetBlock((int)pos.X, (int)pos.Y, (int)pos.Z, blockState);
         public void SetBlock(int x, int y, int z, BlockState blockState) => this.Set(x, y, z, blockState);
+
+        private void FillWithAir()
+        {
+            for (int x = 0; x < 16; x++)
+            {
+                for (int y = 0; y < 16; y++)
+                {
+                    for (int z = 0; z < 16; z++)
+                    {
+                        this.Set(x, y, z, Registry.GetBlock(Materials.Air));
+                    }
+                }
+            }
+        }
 
         public int GetHighestBlock(int x, int z)
         {
