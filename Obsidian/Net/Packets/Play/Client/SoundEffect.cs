@@ -9,7 +9,7 @@ namespace Obsidian.Net.Packets.Play.Client
     public class SoundEffect : IPacket
     {
         [Field(0, Type = DataType.VarInt)]
-        public int SoundId { get; set; }
+        public Sounds SoundId { get; set; }
 
         [Field(1, Type = DataType.VarInt)]
         public SoundCategory Category { get; set; }
@@ -25,9 +25,9 @@ namespace Obsidian.Net.Packets.Play.Client
 
         public int Id => 0x51;
 
-        public SoundEffect(int soundId, SoundPosition position, SoundCategory category = SoundCategory.Master, float pitch = 1.0f, float volume = 1f)
+        public SoundEffect(Sounds sound, SoundPosition position, SoundCategory category = SoundCategory.Master, float pitch = 1.0f, float volume = 1f)
         {
-            this.SoundId = soundId;
+            this.SoundId = sound;
             this.Position = position;
             this.Category = category;
             this.Pitch = pitch;

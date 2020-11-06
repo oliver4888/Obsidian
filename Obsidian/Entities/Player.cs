@@ -1,6 +1,7 @@
 ﻿// This would be saved in a file called [playeruuid].dat which holds a bunch of NBT data.
 // https://wiki.vg/Map_Format
 using Obsidian.API;
+using Obsidian.Blocks;
 using Obsidian.Boss;
 using Obsidian.Chat;
 using Obsidian.Concurrency;
@@ -27,6 +28,8 @@ namespace Obsidian.Entities
         /// </summary>
         public Inventory Inventory { get; private set; } = new Inventory();
         public Inventory OpenedInventory { get; set; }
+
+        public Block LastInteractedBlock { get; set; }
 
         public Guid Uuid { get; set; }
 
@@ -127,6 +130,8 @@ namespace Obsidian.Entities
                 }
             }
         }
+
+        internal Task OpenWindowAsync(OpenWindow window) => this.client.QueuePacketAsync(window);
 
         internal override async Task UpdateAsync(Server server, Position position, Angle yaw, Angle pitch, bool onGround)
         {
@@ -241,7 +246,7 @@ namespace Obsidian.Entities
         public Task SendMessageAsync(IChatMessage message, Guid? sender = null) => SendMessageAsync(message as ChatMessage, sender);
         public Task SendMessageAsync(ChatMessage message, Guid? sender = null) => client.QueuePacketAsync(new ChatMessagePacket(message, 0, sender ?? Guid.Empty));
 
-        public Task SendSoundAsync(int soundId, SoundPosition position, SoundCategory category = SoundCategory.Master, float pitch = 1f, float volume = 1f) => client.QueuePacketAsync(new SoundEffect(soundId, position, category, pitch, volume));
+        public Task SendSoundAsync(Sounds sound, SoundPosition position, SoundCategory category = SoundCategory.Master, float pitch = 1f, float volume = 1f) => client.QueuePacketAsync(new SoundEffect(sound, position, category, pitch, volume));
 
         public Task SendNamedSoundAsync(string name, SoundPosition position, SoundCategory category = SoundCategory.Master, float pitch = 1f, float volume = 1f) => client.QueuePacketAsync(new NamedSoundEffect(name, position, category, pitch, volume));
 
