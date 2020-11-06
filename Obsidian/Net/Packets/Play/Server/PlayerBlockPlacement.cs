@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 using Obsidian.Entities;
 using Obsidian.Events.EventArgs;
 using Obsidian.Util.Registry;
+using Obsidian.Blocks;
+using Obsidian.Items;
+using Obsidian.Net.Packets.Play.Client;
+using Microsoft.Extensions.Logging;
+using System.Linq;
+using System;
 
 namespace Obsidian.Net.Packets.Play.Server
 {
@@ -61,14 +67,46 @@ namespace Obsidian.Net.Packets.Play.Server
 
             if (interactedBlock.CanInteract() && !player.Sneaking)
             {
+                interactedBlock.Location = location;
+                player.LastInteractedBlock = interactedBlock;
+
                 var arg = await server.Events.InvokeBlockInteractAsync(new BlockInteractEventArgs(player, block, this.Location));
 
                 if (arg.Cancel)
                     return;
 
+                var maxId = Math.Max(1, server.CachedWindows.Keys.Count);
                 //TODO open chests/Crafting inventory ^ ^
 
-                //Logger.LogDebug($"Block Interact: {interactedBlock} - {location}");
+                if (interactedBlock.Type == Materials.Chest)
+                {
+                    var inventory = new Inventory
+                    {
+                        Title = "Chest",
+                        Size = 9 * 3,
+                        Type = InventoryType.Generic,
+                        Id = maxId
+                    };
+
+                    await player.OpenWindowAsync(new OpenWindow(inventory));
+                    await player.client.QueuePacketAsync(new BlockAction
+                    {
+                        Location = location,
+                        ActionId = 1,
+                        ActionParam = 1,
+                        BlockType = interactedBlock.Id
+                    });
+                    await player.SendSoundAsync(Sounds.BlockChestOpen, location.SoundPosition, SoundCategory.Blocks);
+                }
+                else if (interactedBlock.Type == Materials.CraftingTable)
+                {
+                    await player.OpenWindowAsync(new OpenWindow
+                    {
+                        Title = "Crafting Table",
+                        Type = WindowType.Crafting,
+                        WindowId = maxId
+                    });
+                }
 
                 return;
             }

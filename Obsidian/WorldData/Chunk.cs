@@ -1,7 +1,7 @@
-﻿using Obsidian.Blocks;
+﻿using Obsidian.API;
+using Obsidian.Blocks;
 using Obsidian.ChunkData;
 using Obsidian.Nbt.Tags;
-using Obsidian.API;
 using Obsidian.Util.Registry;
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,7 @@ namespace Obsidian.WorldData
         public BiomeContainer BiomeContainer { get; private set; } = new BiomeContainer();
 
         public Dictionary<short, Block> Blocks { get; private set; } = new Dictionary<short, Block>();
+        public Dictionary<short, MetadataStore> Metadata { get; private set; } = new Dictionary<short, MetadataStore>();
 
         public ChunkSection[] Sections { get; private set; } = new ChunkSection[16];
         public List<NbtTag> BlockEntities { get; private set; } = new List<NbtTag>();
@@ -35,14 +36,14 @@ namespace Obsidian.WorldData
         private void Init()
         {
             for (int i = 0; i < 16; i++)
-                this.Sections[i] = new ChunkSection();
+                this.Sections[i] = new ChunkSection(yBase: i);
         }
 
         public Block GetBlock(Position position) => this.GetBlock((int)position.X, (int)position.Y, (int)position.Z);
 
         public Block GetBlock(int x, int y, int z)
         {
-            var value = (short)((x << 8) | (z << 4) | y);
+            var value = this.GetIndex(x, y, z);
             return this.Blocks.GetValueOrDefault(value) ?? this.Sections[y >> 4].GetBlock(x, y, z) ?? Registry.GetBlock(Materials.Air);
         }
 
@@ -50,15 +51,15 @@ namespace Obsidian.WorldData
 
         public void SetBlock(int x, int y, int z, Block block)
         {
-            var value = (short)((x << 8) | (z << 4) | y);
+            var value = this.GetIndex(x, y, z);
 
             this.Blocks[value] = block;
 
             this.Sections[y >> 4].SetBlock(x, y & 15, z, block);
-
-           
         }
 
+        public short GetIndex(int x, int y, int z) => (short)((x << 8) | (z << 4) | y);
+       
         public void CalculateHeightmap()
         {
             for (int x = 0; x < 16; x++)
@@ -80,5 +81,44 @@ namespace Obsidian.WorldData
                 }
             }
         }
+
+        #region metadata handling
+        public object GetBlockMetadataValue(int x, int y, int z, string key)
+        {
+            var value = this.GetIndex(x, y, z);
+            return this.Metadata.GetValueOrDefault(value)?.Get(key);
+        }
+
+        public object GetBlockMetadataValue(Position position, string key) => this.GetBlockMetadataValue((int)position.X, (int)position.Y, (int)position.Z, key);
+
+        public void SetBlockMetadataValue(int x, int y, int z, string key, object value)
+        {
+            var posValue = this.GetIndex(x, y, z);
+
+            if (this.Metadata.ContainsKey(posValue))
+            {
+                this.Metadata[posValue].Set(key, value);
+
+                return;
+            }
+
+            var block = this.GetBlock(x, y, z);
+
+            if (block is null || block.IsAir)
+                throw new NullReferenceException("Unable to find valid block (cannot be air)");
+
+            var metadata = new MetadataStore
+            {
+                BlockLocation = new Position(x, y, Z),
+                BlockId = (short)block.Id,
+                BlockType = block.Type
+            };
+            metadata.Set(key, value);
+
+            this.Metadata.Add(posValue, metadata);
+        }
+
+        public void SetBlockMetadataValue(Position position, string key, object value) => this.SetBlockMetadataValue((int)position.X, (int)position.Y, (int)position.Z, key, value);
+        #endregion metadata handling
     }
 }

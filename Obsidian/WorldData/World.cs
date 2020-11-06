@@ -192,7 +192,7 @@ namespace Obsidian.WorldData
         {
             // TODO add behavior that ensures new chunks are loaded when they do not exist
 
-            if(this.Generator.GetType() == typeof(Obsidian.WorldData.Generators.SuperflatGenerator))
+            if(this.Generator.GetType() == typeof(Generators.SuperflatGenerator))
             {
                 return this.Generator.GenerateChunk(chunkX, chunkZ);
             }
