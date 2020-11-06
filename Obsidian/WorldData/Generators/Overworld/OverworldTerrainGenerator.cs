@@ -530,7 +530,7 @@ namespace Obsidian.WorldData.Generators.Overworld
                 Source0 = new Turbulence
                 {
                     Seed = Settings.Seed + 63,
-                    Frequency = 6.8,
+                    Frequency = 2,
                     Power = 1.0 / 11750029 * Settings.HillsTwist,
                     Roughness = 1,
                     // [Coarse-turbulence module]: This turbulence module warps the output
@@ -555,7 +555,7 @@ namespace Obsidian.WorldData.Generators.Overworld
                             // module, decreasing the heights of the hilltops.
                             Source0 = new ScaleBias
                             {
-                                Scale = 0.65,
+                                Scale = 0.85,
                                 Bias = -0.35,
                                 // [Mountains-and-valleys module]: This blender module merges the
                                 // scaled-hills module and the scaled-river-valley module together.  It
@@ -895,9 +895,9 @@ namespace Obsidian.WorldData.Generators.Overworld
                 Source0 = new Turbulence
                 {
                     Seed = Settings.Seed + 102,
-                    Frequency = 9.25,
+                    Frequency = 24.25,
                     Power = 1.0 / 57.75,
-                    Roughness = 6,
+                    Roughness = 4,
                     // [Combined-rivers module]: This minimum-value module causes the small
                     // rivers to cut into the large rivers.  It does this by selecting the
                     // minimum output values from the large-river-curve module and the small-
@@ -913,19 +913,19 @@ namespace Obsidian.WorldData.Generators.Overworld
                         {
                             ControlPoints = new List<Curve.ControlPoint>
                             {
-                                new Curve.ControlPoint(-2.000,  2.000),
-                                new Curve.ControlPoint(-1.000,  1.000),
-                                new Curve.ControlPoint(-0.125,  0.875),
-                                new Curve.ControlPoint( 0.000, -1.000),
-                                new Curve.ControlPoint( 1.000, -1.500),
-                                new Curve.ControlPoint( 2.000, -2.000),
+                                new Curve.ControlPoint(-2.000, 2.000),
+                                new Curve.ControlPoint(-1.000, 1.000),
+                                new Curve.ControlPoint(-0.125, 0.875),
+                                new Curve.ControlPoint(0.000, -1.000),
+                                new Curve.ControlPoint(1.000, -1.500),
+                                new Curve.ControlPoint(2.000, -2.000),
                             },
                             // [Large-river-basis module]: This ridged-multifractal-noise module
                             // creates the large, deep rivers.
                             Source0 = new RidgedMulti
                             {
                                 Seed = Settings.Seed + 100,
-                                Frequency = 68.75,
+                                Frequency = 100.75,
                                 Lacunarity = Settings.ContinentLacunarity,
                                 OctaveCount = 1,
                                 Quality = NoiseQuality.Fast,
@@ -936,7 +936,8 @@ namespace Obsidian.WorldData.Generators.Overworld
                         // become inverted.  This creates the rivers.  This curve also compresses
                         // the edge of the rivers, producing a sharp transition from the land to
                         // the river bottom.
-                        Source1 = new Curve
+                        Source1 = new Constant { ConstantValue = 2 }
+                        /*new Curve
                         {
                             ControlPoints = new List<Curve.ControlPoint>
                             {
@@ -952,12 +953,12 @@ namespace Obsidian.WorldData.Generators.Overworld
                             Source0 = new RidgedMulti
                             {
                                 Seed = Settings.Seed + 101,
-                                Frequency = 83.25,
+                                Frequency = 119.25,
                                 Lacunarity = Settings.ContinentLacunarity,
                                 OctaveCount = 1,
                                 Quality = NoiseQuality.Fast,
                             },
-                        },
+                        },*/
                     },
                 },
             };

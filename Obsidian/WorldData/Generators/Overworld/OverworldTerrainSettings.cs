@@ -168,17 +168,17 @@ namespace Obsidian.WorldData.Generators.Overworld
 
         public OverworldTerrainSettings()
         {
-            Seed = 89;
-            MinElev = 0;
-            MaxElev = 128;
+            Seed = 1337;
+            MinElev = 40;
+            MaxElev = 168;
             ContinentFrequency = 1.85;
 
             ContinentHeightScale = 1;
             TerrainOffset = 1.3;
 
             RiverDepth = 0.5;
-            SeaLevel = 0 / 256.0;
-            ShelfLevel = -10 / 256.0;
+            SeaLevel = 10 / 64.0;
+            ShelfLevel = -4 / 64.0;
 
             MountainsAmount = 0.61;
             HillsAmount = 0.60;
@@ -193,13 +193,13 @@ namespace Obsidian.WorldData.Generators.Overworld
             MountainLacunarity = 2.03;
             HillsLacunarity = 2.162109375;
             PlainsLacunarity = 2.814453125;
-            BadlandsLacunarity = 2.200890625;
+            BadlandsLacunarity = 1.200890625;
 
             CaveFillPercent = 0.5;
             CaveVertStretch = 0.035;
             CaveHorizStretch = 0.022;
 
-            TerrainHorizStretch = 0.0001; // 0.008; //  
+            TerrainHorizStretch = 0.0001; // 0.008; // 
             TerrainVertStretch = 0.60; // 0.4; //
         }
     }
