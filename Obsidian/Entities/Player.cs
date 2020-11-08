@@ -10,6 +10,7 @@ using Obsidian.Net;
 using Obsidian.Net.Packets.Play.Client;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Obsidian.Entities
@@ -17,7 +18,7 @@ namespace Obsidian.Entities
     public class Player : Living, IPlayer
     {
         internal readonly Client client;
-        
+
         public IServer Server => client.Server;
         public bool IsOperator => Server.Operators.IsOperator(this);
 
@@ -131,7 +132,17 @@ namespace Obsidian.Entities
             }
         }
 
-        internal Task OpenWindowAsync(OpenWindow window) => this.client.QueuePacketAsync(window);
+        public async Task OpenInventoryAsync(Inventory inventory)
+        {
+            await this.client.QueuePacketAsync(new OpenWindow(inventory));
+            if (!inventory.Items.IsEmpty)
+                await this.client.QueuePacketAsync(new WindowItems
+                {
+                    WindowId = inventory.Id,
+                    Count = (short)inventory.Items.Values.Count,
+                    Items = inventory.Items.Values.ToList()
+                });
+        }
 
         internal override async Task UpdateAsync(Server server, Position position, Angle yaw, Angle pitch, bool onGround)
         {

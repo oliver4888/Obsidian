@@ -2,6 +2,8 @@
 using Obsidian.Entities;
 using Obsidian.Items;
 using Obsidian.Serializer.Attributes;
+using Obsidian.Serializer.Enums;
+using System;
 using System.Threading.Tasks;
 
 namespace Obsidian.Net.Packets.Play.Server
@@ -65,100 +67,108 @@ namespace Obsidian.Net.Packets.Play.Server
 
         public Task HandleAsync(Obsidian.Server server, Player player)
         {
-            if (this.WindowId == 0)
-            {
+            var inventory = this.WindowId > 0 ? player.OpenedInventory : player.Inventory;
 
-                //This is the player inventory
-                switch (this.Mode)
-                {
-                    case InventoryOperationMode.MouseClick://TODO InventoryClickEvent
+            int subBy = this.ClickedSlot switch
+            {
+                _ when this.ClickedSlot > inventory.Size - 1 && (this.ClickedSlot >= 27 && this.ClickedSlot <= 62) => 18,
+                _ when this.ClickedSlot > inventory.Size - 1 && (this.ClickedSlot >= 54 && this.ClickedSlot <= 89) => 45,
+                _ when this.ClickedSlot <= inventory.Size - 1 => 0,
+                _ => 0,
+            };
+
+            if (subBy > 0)
+            {
+                inventory = player.Inventory;
+                Console.WriteLine($"Player inventory: {this.ClickedSlot}");
+            }
+            else
+            {
+                Console.WriteLine($"Other inventory: {this.ClickedSlot}");
+            }
+
+            switch (this.Mode)
+            {
+                case InventoryOperationMode.MouseClick:
+                    this.HandleMouseClick(inventory, server, player, subBy);
+                    break;
+
+                case InventoryOperationMode.ShiftMouseClick:
+                case InventoryOperationMode.NumberKeys:
+                case InventoryOperationMode.MiddleMouseClick:
+                    break;
+
+                case InventoryOperationMode.Drop:
+                    {
+                        //If clicked slot is -999 that means they clicked outside the inventory
+                        if (this.ClickedSlot != -999)
                         {
                             if (this.Button == 0)
-                            {
-                                player.Inventory.RemoveItem(this.ClickedSlot, 64);
-                            }
+                                inventory.RemoveItem(this.ClickedSlot - subBy);
                             else
-                            {
-                                player.Inventory.RemoveItem(this.ClickedSlot, this.Item.Count / 2);
-                            }
-                            break;
+                                inventory.RemoveItem(this.ClickedSlot - subBy, 64);
                         }
+                        break;
+                    }
+                case InventoryOperationMode.MouseDrag:
+                    this.HandleDragClick(inventory, server, player, subBy);
+                    break;
 
-                    case InventoryOperationMode.ShiftMouseClick:
-                        break;
-                    case InventoryOperationMode.NumberKeys:
-                        break;
-                    case InventoryOperationMode.MiddleMouseClick:
-                        break;
-                    case InventoryOperationMode.Drop:
-                        {
-                            //If clicked slot is -999 that means they clicked outside the inventory
-                            if (this.ClickedSlot != -999)
-                            {
-                                if (this.Button == 0)
-                                    player.Inventory.RemoveItem(this.ClickedSlot);
-                                else
-                                    player.Inventory.RemoveItem(this.ClickedSlot, 64);
-                            }
-                            break;
-                        }
-                    case InventoryOperationMode.MouseDrag:
-                        {
-                            if (this.ClickedSlot == -999)
-                            {
-                                if (this.Button == 0 || this.Button == 4 || this.Button == 8)
-                                {
-                                    player.IsDragging = true;
-                                }
-                                else if (this.Button == 2 || this.Button == 6 || this.Button == 10)
-                                {
-                                    player.IsDragging = false;
-                                }
-                            }
-                            else if (player.IsDragging)
-                            {
-                                if (player.Gamemode == Gamemode.Creative)
-                                {
-                                    if (this.Button != 9)
-                                        break;
+                case InventoryOperationMode.DoubleClick:
+                default:
+                    break;
+            }
 
-                                    //creative copy
-                                    player.Inventory.SetItem(this.ClickedSlot, new ItemStack(this.Item.Id, this.Item.Count)
-                                    {
-                                        Nbt = this.Item.Nbt
-                                    });
-                                }
-                                else
-                                {
-                                    if (this.Button != 1 || this.Button != 5)
-                                        break;
+            return Task.CompletedTask;
+        }
 
-                                    //survival painting
-                                    player.Inventory.SetItem(this.ClickedSlot, new ItemStack(this.Item.Id, this.Item.Count)
-                                    {
-                                        Nbt = this.Item.Nbt
-                                    });
-                                }
-                            }
-                            else
-                            {
-                                //It shouldn't get here
-                            }
+        private void HandleMouseClick(Inventory inventory, Obsidian.Server server, Player player, int subBy)
+        {
+            if (this.Button == 0)
+                inventory.SetItem(this.ClickedSlot - subBy, this.Item);
+            else
+                inventory.RemoveItem(this.ClickedSlot - subBy, this.Item.Count / 2);
+        }
 
-                            break;
-                        }
-                    case InventoryOperationMode.DoubleClick:
-                        break;
-                    default:
-                        break;
+        private void HandleDragClick(Inventory inventory, Obsidian.Server server, Player player, int subBy)
+        {
+            if (this.ClickedSlot == -999)
+            {
+                if (this.Button == 0 || this.Button == 4 || this.Button == 8)
+                    player.IsDragging = true;
+                else if (this.Button == 2 || this.Button == 6 || this.Button == 10)
+                    player.IsDragging = false;
+
+            }
+            else if (player.IsDragging)
+            {
+                if (player.Gamemode == Gamemode.Creative)
+                {
+                    if (this.Button != 9)
+                        return;
+
+                    //creative copy
+                    inventory.SetItem(this.ClickedSlot - subBy, new ItemStack(this.Item.Id, this.Item.Count)
+                    {
+                        Nbt = this.Item.Nbt
+                    });
+                }
+                else
+                {
+                    if (this.Button != 1 || this.Button != 5)
+                        return;
+
+                    //survival painting
+                    inventory.SetItem(this.ClickedSlot - subBy, new ItemStack(this.Item.Id, this.Item.Count)
+                    {
+                        Nbt = this.Item.Nbt
+                    });
                 }
             }
             else
             {
-
+                //It shouldn't get here
             }
-
-            return Task.CompletedTask;
         }
     }
 

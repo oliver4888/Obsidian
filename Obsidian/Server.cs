@@ -37,12 +37,6 @@ using System.Threading.Tasks;
 
 namespace Obsidian
 {
-    public struct QueueChat
-    {
-        public string Message;
-        public sbyte Position;
-    }
-
     public class Server : IServer
     {
         private readonly ConcurrentQueue<QueueChat> chatMessages;
@@ -63,7 +57,7 @@ namespace Obsidian
 
         public IOperatorList Operators { get; }
 
-        internal ConcurrentDictionary<int, Inventory> CachedWindows { get; } = new ConcurrentDictionary<int, Inventory>();
+        internal ConcurrentDictionary<Guid, Inventory> CachedWindows { get; } = new ConcurrentDictionary<Guid, Inventory>();
 
         public ConcurrentDictionary<Guid, Player> OnlinePlayers { get; } = new ConcurrentDictionary<Guid, Player>();
 
@@ -648,5 +642,11 @@ namespace Obsidian
         }
 
         #endregion Events
+
+        struct QueueChat
+        {
+            public string Message;
+            public sbyte Position;
+        }
     }
 }

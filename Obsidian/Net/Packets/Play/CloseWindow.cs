@@ -37,6 +37,8 @@ namespace Obsidian.Net.Packets.Play
                     BlockType = player.LastInteractedBlock.Id
                 });
                 await player.SendSoundAsync(Sounds.BlockChestClose, player.Location.SoundPosition, SoundCategory.Blocks);
+
+                player.OpenedInventory = null;
             }
 
         }

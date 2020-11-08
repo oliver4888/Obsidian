@@ -361,9 +361,14 @@ namespace Obsidian.Net
                                 await this.WriteStringAsync(tag.Name);
                                 await this.WriteVarIntAsync(tag.Count);
 
-                                foreach (var entry in tag.Entries)                                
+                                foreach (var entry in tag.Entries)
                                     await this.WriteVarIntAsync(entry);
                             }
+                        }
+                        else if (value is List<ItemStack> items)
+                        {
+                            foreach (var item in items)
+                                await this.WriteSlotAsync(item);
                         }
                         break;
                     }
@@ -485,7 +490,6 @@ namespace Obsidian.Net
                 }
 
                 //TODO write enchants
-                writer.WriteShort("id", (short)slot.Id);
                 writer.WriteInt("Damage", slot.Nbt.Damage);
                 writer.WriteByte("Count", (byte)slot.Count);
 
@@ -497,15 +501,18 @@ namespace Obsidian.Net
 
         public async Task<ItemStack> ReadSlotAsync()
         {
-            var slot = new ItemStack();
-
-            var present = await this.ReadBooleanAsync();
-            slot.Present = present;
-
-            if (present)
+            var slot = new ItemStack
             {
+                Present = await this.ReadBooleanAsync()
+            };
+
+            if (slot.Present)
+            {
+
                 slot.Id = await this.ReadVarIntAsync();
                 slot.Count = await this.ReadByteAsync();
+
+                Console.WriteLine(slot.Id);
 
                 var reader = new NbtReader(this);
 
@@ -517,13 +524,13 @@ namespace Obsidian.Net
                     {
                         var root = (NbtCompound)reader.ReadAsTag();
 
-                        Globals.PacketLogger.LogDebug(root.ToString());
+                        //Globals.PacketLogger.LogDebug(root.ToString());
                         foreach (var tag in root)
                         {
-                            Globals.PacketLogger.LogDebug($"Tag name: {tag.Name} | Type: {tag.TagType}");
+                            //Globals.PacketLogger.LogDebug($"Tag name: {tag.Name} | Type: {tag.TagType}");
                             if (tag.TagType == NbtTagType.Compound)
                             {
-                                Globals.PacketLogger.LogDebug("Other compound");
+                                //Globals.PacketLogger.LogDebug("Other compound");
                             }
 
                             switch (tag.Name.ToLower())
@@ -569,14 +576,14 @@ namespace Obsidian.Net
                                 case "slot":
                                     {
                                         slot.Nbt.Slot = tag.ByteValue;
-                                        Console.WriteLine($"Setting slot: {slot.Nbt.Slot}");
+                                        //Console.WriteLine($"Setting slot: {slot.Nbt.Slot}");
                                         break;
                                     }
                                 case "damage":
                                     {
 
                                         slot.Nbt.Damage = tag.IntValue;
-                                        Globals.PacketLogger.LogDebug($"Setting damage: {tag.IntValue}");
+                                        //Globals.PacketLogger.LogDebug($"Setting damage: {tag.IntValue}");
                                         break;
                                     }
                                 default:
@@ -593,11 +600,7 @@ namespace Obsidian.Net
                     {
                         Globals.PacketLogger.LogDebug($"Other Name: {reader.TagName}");
                     }
-
-
-
                 }
-
             }
 
             return slot;

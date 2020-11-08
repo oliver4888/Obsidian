@@ -12,6 +12,7 @@ using Obsidian.Net.Packets.Play.Client;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System;
+using Newtonsoft.Json;
 
 namespace Obsidian.Net.Packets.Play.Server
 {
@@ -75,20 +76,42 @@ namespace Obsidian.Net.Packets.Play.Server
                 if (arg.Cancel)
                     return;
 
-                var maxId = Math.Max(1, server.CachedWindows.Keys.Count);
-                //TODO open chests/Crafting inventory ^ ^
+                var maxId = (byte)Math.Max(1, ++Inventory.LastSetId);
+                if (maxId == byte.MaxValue)
+                    maxId = 1;
+
+                if(server.World.GetBlockMetadataValue(location, "inventory_id") is Guid uuid)
+                {
+                    if(server.CachedWindows.TryGetValue(uuid, out var inventory))
+                    {
+                        Console.WriteLine($"Opened window with id of: {uuid} {JsonConvert.SerializeObject(inventory.Items, Formatting.Indented)}");
+
+                        await player.OpenInventoryAsync(inventory);
+                        await player.client.QueuePacketAsync(new BlockAction
+                        {
+                            Location = location,
+                            ActionId = 1,
+                            ActionParam = 1,
+                            BlockType = interactedBlock.Id
+                        });
+                        await player.SendSoundAsync(Sounds.BlockChestOpen, location.SoundPosition, SoundCategory.Blocks);
+
+                        player.OpenedInventory = inventory;
+                    }
+
+                    return;
+                }
 
                 if (interactedBlock.Type == Materials.Chest)
                 {
-                    var inventory = new Inventory
+                    var inventory = new Inventory(9 * 3)
                     {
                         Title = "Chest",
-                        Size = 9 * 3,
                         Type = InventoryType.Generic,
                         Id = maxId
                     };
 
-                    await player.OpenWindowAsync(new OpenWindow(inventory));
+                    await player.OpenInventoryAsync(inventory);
                     await player.client.QueuePacketAsync(new BlockAction
                     {
                         Location = location,
@@ -97,14 +120,20 @@ namespace Obsidian.Net.Packets.Play.Server
                         BlockType = interactedBlock.Id
                     });
                     await player.SendSoundAsync(Sounds.BlockChestOpen, location.SoundPosition, SoundCategory.Blocks);
+
+                    server.World.SetBlockMetadataValue(location, "inventory_id", inventory.Uuid);
+
+                    server.CachedWindows.TryAdd(inventory.Uuid, inventory);
+
+                    player.OpenedInventory = inventory;
                 }
                 else if (interactedBlock.Type == Materials.CraftingTable)
                 {
-                    await player.OpenWindowAsync(new OpenWindow
+                    await player.OpenInventoryAsync(new Inventory
                     {
                         Title = "Crafting Table",
-                        Type = WindowType.Crafting,
-                        WindowId = maxId
+                        Type = InventoryType.Crafting,
+                        Id = maxId
                     });
                 }
 

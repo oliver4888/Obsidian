@@ -29,10 +29,7 @@ namespace Obsidian.Net.Packets.Play.Client
 
             if (inventory.Type == InventoryType.Generic)
             {
-                if (inventory.Size % 9 != 0)
-                    throw new InvalidOperationException($"Generic inventory size must be divisible by 9");
-                else if (inventory.Size > 9 * 6)
-                    throw new InvalidOperationException($"Generic inventory size must not be greater than ({9 * 6})");
+                
 
                 if (Enum.TryParse<WindowType>($"generic9x{inventory.Size / 9}", true, out var type))
                     this.Type = type;

@@ -1,4 +1,6 @@
-﻿using Obsidian.Entities;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Schema;
+using Obsidian.Entities;
 using Obsidian.Items;
 using Obsidian.Net.Packets.Play.Client;
 using Obsidian.Serializer.Attributes;
@@ -28,7 +30,11 @@ namespace Obsidian.Net.Packets.Play.Server
 
         public async Task HandleAsync(Obsidian.Server server, Player player)
         {
-            player.Inventory.SetItem(this.ClickedSlot, new ItemStack(this.ClickedItem.Id, this.ClickedItem.Count)
+            Globals.PacketLogger.LogDebug("Creative inventory click");
+
+            var inventory = player.OpenedInventory != null ? player.OpenedInventory : player.Inventory;
+
+            inventory.SetItem(this.ClickedSlot, new ItemStack(this.ClickedItem.Id, this.ClickedItem.Count)
             {
                 Nbt = this.ClickedItem.Nbt,
                 Present = this.ClickedItem.Present

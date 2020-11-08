@@ -1,27 +1,43 @@
 ﻿using Obsidian.Entities;
-using Obsidian.Util;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Obsidian.Items
 {
     public class Inventory
     {
-        internal int Id { get; set; }
+        internal static int LastSetId { get; set; } = 1;
+
+        internal byte Id { get; set; }
 
         internal int ActionsNumber { get; set; }
+
+        public Guid Uuid { get; private set; } = Guid.NewGuid();
 
         public InventoryType Type { get; set; }
 
         public string Title { get; set; }
 
-        public int Size { get; set; } = 9 * 5;
+        /// <summary>
+        /// The size you want the inventory to be only used when creating a generic inventory
+        /// Default size is 45
+        /// </summary>
+        public int Size { get; }
 
         public ConcurrentDictionary<int, ItemStack> Items { get; private set; } = new ConcurrentDictionary<int, ItemStack>();
 
         public List<Player> Viewers { get; private set; } = new List<Player>();
+
+        public Inventory(int size = 9 * 5)
+        {
+            if (size % 9 != 0)
+                throw new InvalidOperationException($"Generic inventory size must be divisible by 9");
+            else if (size > 9 * 6)
+                throw new InvalidOperationException($"Generic inventory size must not be greater than ({9 * 6})");
+
+            this.Size = size;
+        }
 
         public void AddItems(params ItemStack[] items)
         {
@@ -78,10 +94,7 @@ namespace Obsidian.Items
             if (slot > this.Size - 1 || slot < 0)
                 throw new IndexOutOfRangeException($"{slot} > {this.Size - 1}");
 
-            if (this.Items.ContainsKey(slot))
-                this.Items[slot] = item;
-            else
-                this.Items.TryAdd(slot, item);
+            this.Items[slot] = item;
         }
 
         public ItemStack GetItem(int slot)

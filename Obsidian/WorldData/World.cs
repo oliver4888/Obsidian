@@ -2,6 +2,7 @@
 using Obsidian.API;
 using Obsidian.Blocks;
 using Obsidian.Entities;
+using Obsidian.Items;
 using Obsidian.Nbt;
 using Obsidian.Net.Packets.Play.Client;
 using Obsidian.Util;
@@ -19,13 +20,12 @@ namespace Obsidian.WorldData
     {
         public Level Data { get; internal set; }
 
+        public ConcurrentDictionary<long, Region> Regions { get; private set; } = new ConcurrentDictionary<long, Region>();
         public ConcurrentDictionary<Guid, Player> Players { get; private set; } = new ConcurrentDictionary<Guid, Player>();
 
         public WorldGenerator Generator { get; internal set; }
 
         public Server Server { get; }
-
-        public ConcurrentDictionary<long, Region> Regions { get; private set; } = new ConcurrentDictionary<long, Region>();
 
         public string Name { get; }
         public bool Loaded { get; private set; }
@@ -44,8 +44,6 @@ namespace Obsidian.WorldData
 
             this.Name = name ?? throw new ArgumentNullException(nameof(name));
             this.Server = server;
-
-            this.Init();
         }
 
         public int TotalLoadedEntities() => this.Regions.Select(x => x.Value).Sum(e => e.Entities.Count);
@@ -192,7 +190,7 @@ namespace Obsidian.WorldData
         {
             // TODO add behavior that ensures new chunks are loaded when they do not exist
 
-            if(this.Generator.GetType() == typeof(Generators.SuperflatGenerator))
+            if (this.Generator.GetType() == typeof(Generators.SuperflatGenerator))
             {
                 return this.Generator.GenerateChunk(chunkX, chunkZ);
             }
@@ -227,6 +225,24 @@ namespace Obsidian.WorldData
         }
 
         public void SetBlock(Position location, Block block) => this.SetBlock((int)location.X, (int)location.Y, (int)location.Z, block);
+
+        public object GetBlockMetadataValue(Position location, string key) =>
+            this.GetBlockMetadataValue((int)location.X, (int)location.Y, (int)location.Z, key);
+
+        public object GetBlockMetadataValue(int x, int y, int z, string key) =>
+            this.GetChunk(x.ToChunkCoord(), z.ToChunkCoord()).GetBlockMetadataValue(x, y, z, key);
+
+        public void SetBlockMetadataValue(Position location, string key, object value) =>
+           this.SetBlockMetadataValue((int)location.X, (int)location.Y, (int)location.Z, key, value);
+
+        public void SetBlockMetadataValue(int x, int y, int z, string key, object value)
+        {
+            int chunkX = x.ToChunkCoord(), chunkZ = z.ToChunkCoord();
+
+            long regionIndex = Helpers.IntsToLong(chunkX >> Region.CUBIC_REGION_SIZE_SHIFT, chunkZ >> Region.CUBIC_REGION_SIZE_SHIFT);
+
+            this.Regions[regionIndex].LoadedChunks[chunkX, chunkZ].SetBlockMetadataValue(x, y, z, key, value);
+        }
 
         public IEnumerable<Entity> GetEntitiesNear(Position location, double distance = 10)
         {
@@ -389,11 +405,6 @@ namespace Obsidian.WorldData
                 chunks.Add(c);
             });
             return chunks.ToList();
-        }
-
-        internal void Init()
-        {
-
         }
 
         internal void GenerateWorld()
