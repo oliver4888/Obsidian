@@ -24,10 +24,13 @@ namespace Obsidian.Nbt
 
         public NbtTagType ReadTagType()
         {
+            if (this.BaseStream.Position == this.BaseStream.Length)
+                return NbtTagType.End;
+
             int type = ReadByte();
             if (type < 0)
             {
-                throw new EndOfStreamException();
+                throw new EndOfStreamException(type.ToString());
             }
             else if (type > (int)NbtTagType.LongArray)
             {

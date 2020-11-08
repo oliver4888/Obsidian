@@ -386,12 +386,15 @@ namespace Obsidian.Nbt
             // Make sure the first byte in this file is the tag for a TAG_Compound
             int firstByte = stream.ReadByte();
             if (firstByte < 0)
-            {
                 throw new EndOfStreamException();
-            }
+
+            if ((NbtTagType)firstByte == NbtTagType.End)
+                return;
+            
+
             if (firstByte != (int)NbtTagType.Compound)
             {
-                throw new NbtFormatException("Given NBT stream does not start with a TAG_Compound");
+                throw new NbtFormatException($"Given NBT stream does not start with a TAG_Compound");
             }
             var reader = new NbtBinaryReader(stream, BigEndian)
             {
