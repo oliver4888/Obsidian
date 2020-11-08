@@ -1,5 +1,6 @@
 ﻿using Obsidian.API;
 using Obsidian.Entities;
+using Obsidian.Events.EventArgs;
 using Obsidian.Items;
 using Obsidian.Serializer.Attributes;
 using Obsidian.Serializer.Enums;
@@ -61,7 +62,7 @@ namespace Obsidian.Net.Packets.Play.Server
             this.ClickedSlot = await stream.ReadShortAsync();
             this.Button = await stream.ReadByteAsync();
             this.ActionNumber = await stream.ReadShortAsync();
-            this.Mode = (InventoryOperationMode)await stream.ReadIntAsync();
+            this.Mode = (InventoryOperationMode)await stream.ReadVarIntAsync();
             this.Item = await stream.ReadSlotAsync();
         }
 
@@ -80,11 +81,11 @@ namespace Obsidian.Net.Packets.Play.Server
             if (subBy > 0)
             {
                 inventory = player.Inventory;
-                Console.WriteLine($"Player inventory: {this.ClickedSlot}");
+                Console.WriteLine($"Player inventory: {this.ClickedSlot}:{this.Item.Id}");
             }
             else
             {
-                Console.WriteLine($"Other inventory: {this.ClickedSlot}");
+                Console.WriteLine($"Other inventory: {this.ClickedSlot}:{this.Item.Id}");
             }
 
             switch (this.Mode)
@@ -122,12 +123,34 @@ namespace Obsidian.Net.Packets.Play.Server
             return Task.CompletedTask;
         }
 
-        private void HandleMouseClick(Inventory inventory, Obsidian.Server server, Player player, int subBy)
+        private async Task HandleMouseClick(Inventory inventory, Obsidian.Server server, Player player, int subBy)
         {
+            if (this.Item.Id > 0)
+            {
+                var evt = await server.Events.InvokeInventoryClickAsync(new InventoryClickEventArgs(player, inventory, this.Item)
+                {
+                    Slot = this.ClickedSlot
+                });
+
+                if (evt.Cancel)
+                    return;
+
+                player.LastClickedItem = this.Item;   
+            }
+
             if (this.Button == 0)
-                inventory.SetItem(this.ClickedSlot - subBy, this.Item);
+            {
+                if(player.LastClickedItem?.Id > 0 && this.Item.Id == 0)
+                {
+                    inventory.SetItem(this.ClickedSlot - subBy, player.LastClickedItem);
+
+                    player.LastClickedItem = null;
+                }
+            }
             else
+            {
                 inventory.RemoveItem(this.ClickedSlot - subBy, this.Item.Count / 2);
+            }
         }
 
         private void HandleDragClick(Inventory inventory, Obsidian.Server server, Player player, int subBy)

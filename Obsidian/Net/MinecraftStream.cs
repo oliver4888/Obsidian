@@ -508,11 +508,8 @@ namespace Obsidian.Net
 
             if (slot.Present)
             {
-
                 slot.Id = await this.ReadVarIntAsync();
                 slot.Count = await this.ReadByteAsync();
-
-                Console.WriteLine(slot.Id);
 
                 var reader = new NbtReader(this);
 

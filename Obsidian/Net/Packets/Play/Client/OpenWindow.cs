@@ -27,16 +27,9 @@ namespace Obsidian.Net.Packets.Play.Client
         {
             this.Title = inventory.Title;
 
-            if (inventory.Type == InventoryType.Generic)
-            {
-                
-
-                if (Enum.TryParse<WindowType>($"generic9x{inventory.Size / 9}", true, out var type))
-                    this.Type = type;
-                else if (Enum.TryParse(inventory.Type.ToString(), true, out type))
-                    this.Type = type;
-            }
-            else if (Enum.TryParse<WindowType>(inventory.Type.ToString(), true, out var type))
+            if (Enum.TryParse<WindowType>($"generic9x{inventory.Size / 9}", true, out var type))
+                this.Type = type;
+            else if (Enum.TryParse(inventory.Type.ToString(), true, out type))
                 this.Type = type;
 
             this.WindowId = inventory.Id;

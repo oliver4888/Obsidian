@@ -347,16 +347,16 @@ namespace Obsidian
             await this.SendServerBrand();
 
             // TODO figure out why tags make air blocks a fluid
-            //await this.QueuePacketAsync(new TagsPacket
-            //{
-            //    Blocks = Registry.Tags["blocks"],
+            /*await this.QueuePacketAsync(new TagsPacket
+            {
+                Blocks = Registry.Tags["blocks"],
 
-            //    Items = Registry.Tags["items"],
+                Items = Registry.Tags["items"],
 
-            //    Fluid = Registry.Tags["fluids"],
+                Fluid = Registry.Tags["fluids"],
 
-            //    Entities = Registry.Tags["entity_types"]
-            //});
+                Entities = Registry.Tags["entity_types"]
+            });*/
 
             await this.SendDeclareCommandsAsync();
             await this.SendPlayerInfoAsync();
@@ -561,6 +561,8 @@ namespace Obsidian
             catch (Exception) { } // when packets are interrupted, threads may hang..
         }
 
+        internal Task ChangeGameState(ChangeGameStateReason reason, float value) => this.QueuePacketAsync(new ChangeGameState(reason, value));
+
         internal async Task QueuePacketAsync(IPacket packet)
         {
             var args = await this.Server.Events.InvokeQueuePacketAsync(new QueuePacketEventArgs(this, packet));
@@ -582,7 +584,7 @@ namespace Obsidian
 
         internal async Task SendChunkAsync(Chunk chunk)
         {
-            if(chunk != null)
+            if (chunk != null)
                 await this.QueuePacketAsync(new ChunkDataPacket(chunk));
         }
 
