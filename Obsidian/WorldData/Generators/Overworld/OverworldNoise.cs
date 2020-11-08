@@ -160,7 +160,7 @@ namespace Obsidian.WorldData.Generators.Overworld
 
         public bool isRiver(float x, float z)
         {
-            return generator.RiversPos.GetValue(x * generatorSettings.TerrainHorizStretch, 0, z * generatorSettings.TerrainHorizStretch) < 0.2;
+            return generator.RiversPos.GetValue(x * generatorSettings.TerrainHorizStretch, 0, z * generatorSettings.TerrainHorizStretch) < 0.5;
         }
 
         public bool isMountain(float x, float z)
@@ -171,13 +171,13 @@ namespace Obsidian.WorldData.Generators.Overworld
         public bool isHills(float x, float z)
         {
             var value = generator.ContinentsWithHills.GetValue(x * generatorSettings.TerrainHorizStretch, 0, z * generatorSettings.TerrainHorizStretch);
-            return value > -0.16 && value < -0.05;
+            return value > -0.05;
         }
 
         public bool isBadlands(float x, float z)
         {
             var value = generator.ContinentsWithBadlands.GetValue(x * generatorSettings.TerrainHorizStretch, 0, z * generatorSettings.TerrainHorizStretch);
-            return value > 0.06;
+            return value > 0.5;
         }
 
         public bool isPlains(float x, float z)
