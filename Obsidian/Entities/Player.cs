@@ -84,6 +84,8 @@ namespace Obsidian.Entities
         public ConcurrentHashSet<string> PlayerPermissions { get; } = new ConcurrentHashSet<string>();
         public ICollection<string> Permissions => PlayerPermissions;
 
+        internal ItemStack LastClickedItem { get; set; }
+
         internal Player(Guid uuid, string username, Client client)
         {
             this.Uuid = uuid;
@@ -290,7 +292,7 @@ namespace Obsidian.Entities
 
         public async Task SetGamemodeAsync(Gamemode gamemode)
         {
-            await client.QueuePacketAsync(new Net.Packets.Play.Client.GameState.ChangeGamemodeState(gamemode));
+            await client.ChangeGameState(ChangeGameStateReason.ChangeGamemode, (byte)gamemode);
             this.Gamemode = gamemode;
         }
     }

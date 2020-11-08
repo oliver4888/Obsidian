@@ -5,22 +5,23 @@ using System.Threading.Tasks;
 
 namespace Obsidian.Net.Packets.Play.Client
 {
-    public abstract class ChangeGameState<T> : IPacket
+    public class ChangeGameState : IPacket
     {
         [Field(0, Type = DataType.UnsignedByte)]
 
         public ChangeGameStateReason Reason { get; set; }
 
         [Field(1, Type = DataType.Float)]
-        public abstract T Value { get; set; }
+        public float Value { get; set; }
 
         public int Id => 0x1D;
 
         public ChangeGameState() { }
 
-        public ChangeGameState(ChangeGameStateReason reason)
+        public ChangeGameState(ChangeGameStateReason reason, float value)
         {
             this.Reason = reason;
+            this.Value = value;
         }
 
         public Task WriteAsync(MinecraftStream stream) => Task.CompletedTask;
