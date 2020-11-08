@@ -75,6 +75,7 @@ namespace Obsidian
 
         public CommandHandler Commands { get; }
         public Config Config { get; }
+        public IConfig Configuration => Config;
 
         public ILogger Logger { get; }
 
@@ -148,6 +149,7 @@ namespace Obsidian
             this.Events.ServerTick += this.OnServerTick;
         }
 
+        
         public void RegisterCommandClass<T>() where T : BaseCommandClass
         {
             this.Commands.RegisterCommandClass<T>();
@@ -292,7 +294,11 @@ namespace Obsidian
         {
             if (!message.StartsWith('/'))
             {
-                await this.BroadcastAsync($"<{source.Player.Username}> {message}", position);
+                var chat = await this.Events.InvokeIncomingChatMessageAsync(new IncomingChatMessageEventArgs(source.Player, message));
+
+                if(!chat.Cancel)
+                    await this.BroadcastAsync($"<{source.Player.Username}> {message}", position);
+
                 return;
             }
 
@@ -642,10 +648,7 @@ namespace Obsidian
             await this.SendSpawnPlayerAsync(joined);
         }
 
-        private async Task OnServerTick()
-        {
-            await Task.CompletedTask;
-        }
+        private  Task OnServerTick() => Task.CompletedTask;
 
         #endregion Events
     }
